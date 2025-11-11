@@ -82,6 +82,19 @@ type Service interface {
 	OverwriteFleetRepositoryRefs(ctx context.Context, name string, repositoryNames ...string) api.Status
 	GetFleetRepositoryRefs(ctx context.Context, name string) (*api.RepositoryList, api.Status)
 
+	// ImageBuild
+	CreateImageBuild(ctx context.Context, imageBuild api.ImageBuild) (*api.ImageBuild, api.Status)
+	ListImageBuilds(ctx context.Context, params api.ListImageBuildsParams) (*api.ImageBuildList, api.Status)
+	GetImageBuild(ctx context.Context, name string) (*api.ImageBuild, api.Status)
+	ReplaceImageBuild(ctx context.Context, name string, imageBuild api.ImageBuild) (*api.ImageBuild, api.Status)
+	DeleteImageBuild(ctx context.Context, name string) api.Status
+	GetImageBuildStatus(ctx context.Context, name string) (*api.ImageBuild, api.Status)
+	ReplaceImageBuildStatus(ctx context.Context, name string, imageBuild api.ImageBuild) (*api.ImageBuild, api.Status)
+	PatchImageBuild(ctx context.Context, name string, patch api.PatchRequest) (*api.ImageBuild, api.Status)
+	PatchImageBuildStatus(ctx context.Context, name string, patch api.PatchRequest) (*api.ImageBuild, api.Status)
+	GetImageBuildLogs(ctx context.Context, name string) ([]string, api.Status)
+	GenerateContainerfile(ctx context.Context, imageBuildSpec api.ImageBuildSpec, enrollmentCert string) (string, api.Status)
+
 	// Labels
 	ListLabels(ctx context.Context, params api.ListLabelsParams) (*api.LabelList, api.Status)
 

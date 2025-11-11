@@ -24,6 +24,7 @@ type Store interface {
 	EnrollmentRequest() EnrollmentRequest
 	CertificateSigningRequest() CertificateSigningRequest
 	Fleet() Fleet
+	ImageBuild() ImageBuild
 	TemplateVersion() TemplateVersion
 	Repository() Repository
 	ResourceSync() ResourceSync
@@ -40,6 +41,7 @@ type DataStore struct {
 	enrollmentRequest         EnrollmentRequest
 	certificateSigningRequest CertificateSigningRequest
 	fleet                     Fleet
+	imageBuild                ImageBuild
 	templateVersion           TemplateVersion
 	repository                Repository
 	resourceSync              ResourceSync
@@ -56,6 +58,7 @@ func NewStore(db *gorm.DB, log logrus.FieldLogger) Store {
 		enrollmentRequest:         NewEnrollmentRequest(db, log),
 		certificateSigningRequest: NewCertificateSigningRequest(db, log),
 		fleet:                     NewFleet(db, log),
+		imageBuild:                NewImageBuild(db, log),
 		templateVersion:           NewTemplateVersion(db, log),
 		repository:                NewRepository(db, log),
 		resourceSync:              NewResourceSync(db, log),
@@ -84,6 +87,10 @@ func (s *DataStore) CertificateSigningRequest() CertificateSigningRequest {
 
 func (s *DataStore) Fleet() Fleet {
 	return s.fleet
+}
+
+func (s *DataStore) ImageBuild() ImageBuild {
+	return s.imageBuild
 }
 
 func (s *DataStore) TemplateVersion() TemplateVersion {
@@ -161,6 +168,9 @@ func (s *DataStore) RunMigrations(ctx context.Context) error {
 		return err
 	}
 	if err := s.Fleet().InitialMigration(ctx); err != nil {
+		return err
+	}
+	if err := s.ImageBuild().InitialMigration(ctx); err != nil {
 		return err
 	}
 	if err := s.TemplateVersion().InitialMigration(ctx); err != nil {

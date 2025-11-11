@@ -1,0 +1,58 @@
+{{ if .Values.imagebuilder.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flightctl-imagebuilder-config
+  namespace: {{ default .Release.Namespace .Values.global.internalNamespace }}
+  labels:
+    {{- include "flightctl.standardLabels" . | nindent 4 }}
+data:
+  config.yaml: |-
+    database:
+        hostname: {{ include "flightctl.dbHostname" . }}
+        type: {{ required "Values.db.type is required" $.Values.db.type | quote }}
+        port: {{ required "Values.db.port is required" $.Values.db.port }}
+        name: {{ required "Values.db.name is required" $.Values.db.name }}
+        {{- if .Values.db.sslmode }}
+        sslmode: {{ .Values.db.sslmode | quote }}
+        {{- end }}
+        {{- if .Values.db.sslcert }}
+        sslcert: {{ .Values.db.sslcert | quote }}
+        {{- end }}
+        {{- if .Values.db.sslkey }}
+        sslkey: {{ .Values.db.sslkey | quote }}
+        {{- end }}
+        {{- if .Values.db.sslrootcert }}
+        sslrootcert: {{ .Values.db.sslrootcert | quote }}
+        {{- end }}
+    service:
+        baseUrl: https://flightctl-api.{{ .Release.Namespace }}.svc.cluster.local:3443
+        {{- if and (eq (include "flightctl.getServiceExposeMethod" .) "nodePort") (not (eq (int .Values.global.nodePorts.agent) 443)) }}
+        baseAgentEndpointUrl: https://agent-api.{{ include "flightctl.getBaseDomain" . }}:{{ .Values.global.nodePorts.agent }}/
+        {{- else if and (eq (include "flightctl.getServiceExposeMethod" .) "gateway") (not (eq (int .Values.global.gatewayPorts.tls) 443)) }}
+        baseAgentEndpointUrl: https://agent-api.{{ include "flightctl.getBaseDomain" . }}:{{ .Values.global.gatewayPorts.tls }}/
+        {{- else }}
+        baseAgentEndpointUrl: https://agent-api.{{ include "flightctl.getBaseDomain" . }}/
+        {{- end }}
+        baseUIUrl: {{ include "flightctl.getUIUrl" . }}
+        logLevel: {{ default "info" .Values.imagebuilder.logLevel }}
+    imagebuilder:
+      buildNamespace: {{ .Values.imagebuilder.buildNamespace }}
+      defaultRegistry: {{ .Values.imagebuilder.defaultRegistry }}
+      {{- if .Values.imagebuilder.serviceUrl }}
+      serviceUrl: {{ .Values.imagebuilder.serviceUrl }}
+      {{- else }}
+      serviceUrl: http://flightctl-imagebuilder.{{ default .Release.Namespace .Values.global.internalNamespace }}.svc.cluster.local:9090
+      {{- end }}
+      storage:
+        type: {{ .Values.imagebuilder.storage.type }}
+        {{- if eq .Values.imagebuilder.storage.type "pvc" }}
+        pvcName: {{ .Values.imagebuilder.storage.pvcName }}
+        {{- else if eq .Values.imagebuilder.storage.type "s3" }}
+        s3:
+          bucket: {{ .Values.imagebuilder.storage.s3.bucket }}
+          region: {{ .Values.imagebuilder.storage.s3.region }}
+          endpoint: {{ .Values.imagebuilder.storage.s3.endpoint }}
+        {{- end }}
+{{ end }}
+

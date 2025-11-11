@@ -160,6 +160,21 @@ func (mr *MockServiceMockRecorder) CreateFleet(ctx, fleet any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateFleet", reflect.TypeOf((*MockService)(nil).CreateFleet), ctx, fleet)
 }
 
+// CreateImageBuild mocks base method.
+func (m *MockService) CreateImageBuild(ctx context.Context, imageBuild v1alpha1.ImageBuild) (*v1alpha1.ImageBuild, v1alpha1.Status) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateImageBuild", ctx, imageBuild)
+	ret0, _ := ret[0].(*v1alpha1.ImageBuild)
+	ret1, _ := ret[1].(v1alpha1.Status)
+	return ret0, ret1
+}
+
+// CreateImageBuild indicates an expected call of CreateImageBuild.
+func (mr *MockServiceMockRecorder) CreateImageBuild(ctx, imageBuild any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateImageBuild", reflect.TypeOf((*MockService)(nil).CreateImageBuild), ctx, imageBuild)
+}
+
 // CreateRepository mocks base method.
 func (m *MockService) CreateRepository(ctx context.Context, repo v1alpha1.Repository) (*v1alpha1.Repository, v1alpha1.Status) {
 	m.ctrl.T.Helper()
@@ -291,6 +306,20 @@ func (mr *MockServiceMockRecorder) DeleteFleet(ctx, name any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteFleet", reflect.TypeOf((*MockService)(nil).DeleteFleet), ctx, name)
 }
 
+// DeleteImageBuild mocks base method.
+func (m *MockService) DeleteImageBuild(ctx context.Context, name string) v1alpha1.Status {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteImageBuild", ctx, name)
+	ret0, _ := ret[0].(v1alpha1.Status)
+	return ret0
+}
+
+// DeleteImageBuild indicates an expected call of DeleteImageBuild.
+func (mr *MockServiceMockRecorder) DeleteImageBuild(ctx, name any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteImageBuild", reflect.TypeOf((*MockService)(nil).DeleteImageBuild), ctx, name)
+}
+
 // DeleteRepository mocks base method.
 func (m *MockService) DeleteRepository(ctx context.Context, name string) v1alpha1.Status {
 	m.ctrl.T.Helper()
@@ -331,6 +360,21 @@ func (m *MockService) DeleteTemplateVersion(ctx context.Context, fleet, name str
 func (mr *MockServiceMockRecorder) DeleteTemplateVersion(ctx, fleet, name any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTemplateVersion", reflect.TypeOf((*MockService)(nil).DeleteTemplateVersion), ctx, fleet, name)
+}
+
+// GenerateContainerfile mocks base method.
+func (m *MockService) GenerateContainerfile(ctx context.Context, imageBuildSpec v1alpha1.ImageBuildSpec, enrollmentCert string) (string, v1alpha1.Status) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GenerateContainerfile", ctx, imageBuildSpec, enrollmentCert)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(v1alpha1.Status)
+	return ret0, ret1
+}
+
+// GenerateContainerfile indicates an expected call of GenerateContainerfile.
+func (mr *MockServiceMockRecorder) GenerateContainerfile(ctx, imageBuildSpec, enrollmentCert any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateContainerfile", reflect.TypeOf((*MockService)(nil).GenerateContainerfile), ctx, imageBuildSpec, enrollmentCert)
 }
 
 // GetCertificateSigningRequest mocks base method.
@@ -556,6 +600,51 @@ func (m *MockService) GetFleetStatus(ctx context.Context, name string) (*v1alpha
 func (mr *MockServiceMockRecorder) GetFleetStatus(ctx, name any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFleetStatus", reflect.TypeOf((*MockService)(nil).GetFleetStatus), ctx, name)
+}
+
+// GetImageBuild mocks base method.
+func (m *MockService) GetImageBuild(ctx context.Context, name string) (*v1alpha1.ImageBuild, v1alpha1.Status) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetImageBuild", ctx, name)
+	ret0, _ := ret[0].(*v1alpha1.ImageBuild)
+	ret1, _ := ret[1].(v1alpha1.Status)
+	return ret0, ret1
+}
+
+// GetImageBuild indicates an expected call of GetImageBuild.
+func (mr *MockServiceMockRecorder) GetImageBuild(ctx, name any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetImageBuild", reflect.TypeOf((*MockService)(nil).GetImageBuild), ctx, name)
+}
+
+// GetImageBuildLogs mocks base method.
+func (m *MockService) GetImageBuildLogs(ctx context.Context, name string) ([]string, v1alpha1.Status) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetImageBuildLogs", ctx, name)
+	ret0, _ := ret[0].([]string)
+	ret1, _ := ret[1].(v1alpha1.Status)
+	return ret0, ret1
+}
+
+// GetImageBuildLogs indicates an expected call of GetImageBuildLogs.
+func (mr *MockServiceMockRecorder) GetImageBuildLogs(ctx, name any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetImageBuildLogs", reflect.TypeOf((*MockService)(nil).GetImageBuildLogs), ctx, name)
+}
+
+// GetImageBuildStatus mocks base method.
+func (m *MockService) GetImageBuildStatus(ctx context.Context, name string) (*v1alpha1.ImageBuild, v1alpha1.Status) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetImageBuildStatus", ctx, name)
+	ret0, _ := ret[0].(*v1alpha1.ImageBuild)
+	ret1, _ := ret[1].(v1alpha1.Status)
+	return ret0, ret1
+}
+
+// GetImageBuildStatus indicates an expected call of GetImageBuildStatus.
+func (mr *MockServiceMockRecorder) GetImageBuildStatus(ctx, name any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetImageBuildStatus", reflect.TypeOf((*MockService)(nil).GetImageBuildStatus), ctx, name)
 }
 
 // GetLatestTemplateVersion mocks base method.
@@ -798,6 +887,21 @@ func (mr *MockServiceMockRecorder) ListFleets(ctx, params any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListFleets", reflect.TypeOf((*MockService)(nil).ListFleets), ctx, params)
 }
 
+// ListImageBuilds mocks base method.
+func (m *MockService) ListImageBuilds(ctx context.Context, params v1alpha1.ListImageBuildsParams) (*v1alpha1.ImageBuildList, v1alpha1.Status) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListImageBuilds", ctx, params)
+	ret0, _ := ret[0].(*v1alpha1.ImageBuildList)
+	ret1, _ := ret[1].(v1alpha1.Status)
+	return ret0, ret1
+}
+
+// ListImageBuilds indicates an expected call of ListImageBuilds.
+func (mr *MockServiceMockRecorder) ListImageBuilds(ctx, params any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListImageBuilds", reflect.TypeOf((*MockService)(nil).ListImageBuilds), ctx, params)
+}
+
 // ListLabels mocks base method.
 func (m *MockService) ListLabels(ctx context.Context, params v1alpha1.ListLabelsParams) (*v1alpha1.LabelList, v1alpha1.Status) {
 	m.ctrl.T.Helper()
@@ -1000,6 +1104,36 @@ func (mr *MockServiceMockRecorder) PatchFleet(ctx, name, patch any) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PatchFleet", reflect.TypeOf((*MockService)(nil).PatchFleet), ctx, name, patch)
 }
 
+// PatchImageBuild mocks base method.
+func (m *MockService) PatchImageBuild(ctx context.Context, name string, patch v1alpha1.PatchRequest) (*v1alpha1.ImageBuild, v1alpha1.Status) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "PatchImageBuild", ctx, name, patch)
+	ret0, _ := ret[0].(*v1alpha1.ImageBuild)
+	ret1, _ := ret[1].(v1alpha1.Status)
+	return ret0, ret1
+}
+
+// PatchImageBuild indicates an expected call of PatchImageBuild.
+func (mr *MockServiceMockRecorder) PatchImageBuild(ctx, name, patch any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PatchImageBuild", reflect.TypeOf((*MockService)(nil).PatchImageBuild), ctx, name, patch)
+}
+
+// PatchImageBuildStatus mocks base method.
+func (m *MockService) PatchImageBuildStatus(ctx context.Context, name string, patch v1alpha1.PatchRequest) (*v1alpha1.ImageBuild, v1alpha1.Status) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "PatchImageBuildStatus", ctx, name, patch)
+	ret0, _ := ret[0].(*v1alpha1.ImageBuild)
+	ret1, _ := ret[1].(v1alpha1.Status)
+	return ret0, ret1
+}
+
+// PatchImageBuildStatus indicates an expected call of PatchImageBuildStatus.
+func (mr *MockServiceMockRecorder) PatchImageBuildStatus(ctx, name, patch any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PatchImageBuildStatus", reflect.TypeOf((*MockService)(nil).PatchImageBuildStatus), ctx, name, patch)
+}
+
 // PatchRepository mocks base method.
 func (m *MockService) PatchRepository(ctx context.Context, name string, patch v1alpha1.PatchRequest) (*v1alpha1.Repository, v1alpha1.Status) {
 	m.ctrl.T.Helper()
@@ -1133,6 +1267,36 @@ func (m *MockService) ReplaceFleetStatus(ctx context.Context, name string, fleet
 func (mr *MockServiceMockRecorder) ReplaceFleetStatus(ctx, name, fleet any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReplaceFleetStatus", reflect.TypeOf((*MockService)(nil).ReplaceFleetStatus), ctx, name, fleet)
+}
+
+// ReplaceImageBuild mocks base method.
+func (m *MockService) ReplaceImageBuild(ctx context.Context, name string, imageBuild v1alpha1.ImageBuild) (*v1alpha1.ImageBuild, v1alpha1.Status) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReplaceImageBuild", ctx, name, imageBuild)
+	ret0, _ := ret[0].(*v1alpha1.ImageBuild)
+	ret1, _ := ret[1].(v1alpha1.Status)
+	return ret0, ret1
+}
+
+// ReplaceImageBuild indicates an expected call of ReplaceImageBuild.
+func (mr *MockServiceMockRecorder) ReplaceImageBuild(ctx, name, imageBuild any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReplaceImageBuild", reflect.TypeOf((*MockService)(nil).ReplaceImageBuild), ctx, name, imageBuild)
+}
+
+// ReplaceImageBuildStatus mocks base method.
+func (m *MockService) ReplaceImageBuildStatus(ctx context.Context, name string, imageBuild v1alpha1.ImageBuild) (*v1alpha1.ImageBuild, v1alpha1.Status) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReplaceImageBuildStatus", ctx, name, imageBuild)
+	ret0, _ := ret[0].(*v1alpha1.ImageBuild)
+	ret1, _ := ret[1].(v1alpha1.Status)
+	return ret0, ret1
+}
+
+// ReplaceImageBuildStatus indicates an expected call of ReplaceImageBuildStatus.
+func (mr *MockServiceMockRecorder) ReplaceImageBuildStatus(ctx, name, imageBuild any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReplaceImageBuildStatus", reflect.TypeOf((*MockService)(nil).ReplaceImageBuildStatus), ctx, name, imageBuild)
 }
 
 // ReplaceRepository mocks base method.

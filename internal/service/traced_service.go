@@ -43,6 +43,84 @@ func endSpan(span trace.Span, st api.Status) {
 	span.End()
 }
 
+// --- ImageBuild ---
+func (t *TracedService) CreateImageBuild(ctx context.Context, imageBuild api.ImageBuild) (*api.ImageBuild, api.Status) {
+	ctx, span := startSpan(ctx, "CreateImageBuild")
+	resp, st := t.inner.CreateImageBuild(ctx, imageBuild)
+	endSpan(span, st)
+	return resp, st
+}
+
+func (t *TracedService) ListImageBuilds(ctx context.Context, params api.ListImageBuildsParams) (*api.ImageBuildList, api.Status) {
+	ctx, span := startSpan(ctx, "ListImageBuilds")
+	resp, st := t.inner.ListImageBuilds(ctx, params)
+	endSpan(span, st)
+	return resp, st
+}
+
+func (t *TracedService) GetImageBuild(ctx context.Context, name string) (*api.ImageBuild, api.Status) {
+	ctx, span := startSpan(ctx, "GetImageBuild")
+	resp, st := t.inner.GetImageBuild(ctx, name)
+	endSpan(span, st)
+	return resp, st
+}
+
+func (t *TracedService) ReplaceImageBuild(ctx context.Context, name string, imageBuild api.ImageBuild) (*api.ImageBuild, api.Status) {
+	ctx, span := startSpan(ctx, "ReplaceImageBuild")
+	resp, st := t.inner.ReplaceImageBuild(ctx, name, imageBuild)
+	endSpan(span, st)
+	return resp, st
+}
+
+func (t *TracedService) DeleteImageBuild(ctx context.Context, name string) api.Status {
+	ctx, span := startSpan(ctx, "DeleteImageBuild")
+	st := t.inner.DeleteImageBuild(ctx, name)
+	endSpan(span, st)
+	return st
+}
+
+func (t *TracedService) GetImageBuildStatus(ctx context.Context, name string) (*api.ImageBuild, api.Status) {
+	ctx, span := startSpan(ctx, "GetImageBuildStatus")
+	resp, st := t.inner.GetImageBuildStatus(ctx, name)
+	endSpan(span, st)
+	return resp, st
+}
+
+func (t *TracedService) ReplaceImageBuildStatus(ctx context.Context, name string, imageBuild api.ImageBuild) (*api.ImageBuild, api.Status) {
+	ctx, span := startSpan(ctx, "ReplaceImageBuildStatus")
+	resp, st := t.inner.ReplaceImageBuildStatus(ctx, name, imageBuild)
+	endSpan(span, st)
+	return resp, st
+}
+
+func (t *TracedService) PatchImageBuild(ctx context.Context, name string, patch api.PatchRequest) (*api.ImageBuild, api.Status) {
+	ctx, span := startSpan(ctx, "PatchImageBuild")
+	resp, st := t.inner.PatchImageBuild(ctx, name, patch)
+	endSpan(span, st)
+	return resp, st
+}
+
+func (t *TracedService) PatchImageBuildStatus(ctx context.Context, name string, patch api.PatchRequest) (*api.ImageBuild, api.Status) {
+	ctx, span := startSpan(ctx, "PatchImageBuildStatus")
+	resp, st := t.inner.PatchImageBuildStatus(ctx, name, patch)
+	endSpan(span, st)
+	return resp, st
+}
+
+func (t *TracedService) GetImageBuildLogs(ctx context.Context, name string) ([]string, api.Status) {
+	ctx, span := startSpan(ctx, "GetImageBuildLogs")
+	resp, st := t.inner.GetImageBuildLogs(ctx, name)
+	endSpan(span, st)
+	return resp, st
+}
+
+func (t *TracedService) GenerateContainerfile(ctx context.Context, imageBuildSpec api.ImageBuildSpec, enrollmentCert string) (string, api.Status) {
+	ctx, span := startSpan(ctx, "GenerateContainerfile")
+	resp, st := t.inner.GenerateContainerfile(ctx, imageBuildSpec, enrollmentCert)
+	endSpan(span, st)
+	return resp, st
+}
+
 // --- CertificateSigningRequest ---
 func (t *TracedService) ListCertificateSigningRequests(ctx context.Context, p api.ListCertificateSigningRequestsParams) (*api.CertificateSigningRequestList, api.Status) {
 	ctx, span := startSpan(ctx, "ListCertificateSigningRequests")

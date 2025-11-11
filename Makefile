@@ -150,6 +150,7 @@ build: bin build-cli build-pam-issuer
 		./cmd/flightctl-api \
 		./cmd/flightctl-periodic \
 		./cmd/flightctl-worker \
+		./cmd/flightctl-imagebuilder \
 		./cmd/flightctl-alert-exporter \
 		./cmd/flightctl-alertmanager-proxy \
 		./cmd/flightctl-userinfo-proxy \
@@ -183,6 +184,9 @@ build-restore: bin
 
 build-worker: bin
 	$(GOENV) GOOS=$(GOOS) GOARCH=$(GOARCH) go build -buildvcs=false $(GO_BUILD_FLAGS) -o $(GOBIN) ./cmd/flightctl-worker
+
+build-imagebuilder: bin
+	$(GOENV) GOOS=$(GOOS) GOARCH=$(GOARCH) go build -buildvcs=false $(GO_BUILD_FLAGS) -o $(GOBIN) ./cmd/flightctl-imagebuilder
 
 build-periodic: bin
 	$(GOENV) GOOS=$(GOOS) GOARCH=$(GOARCH) go build -buildvcs=false $(GO_BUILD_FLAGS) -o $(GOBIN) ./cmd/flightctl-periodic
@@ -231,6 +235,13 @@ flightctl-worker-container: Containerfile.worker go.mod go.sum $(GO_FILES)
 		--build-arg SOURCE_GIT_TREE_STATE=${SOURCE_GIT_TREE_STATE} \
 		--build-arg SOURCE_GIT_COMMIT=${SOURCE_GIT_COMMIT} \
 		-f Containerfile.worker -t flightctl-worker:latest
+
+flightctl-imagebuilder-container: Containerfile.imagebuilder go.mod go.sum $(GO_FILES)
+	podman build $(call CACHE_FLAGS_FOR_IMAGE,flightctl-imagebuilder) \
+		--build-arg SOURCE_GIT_TAG=${SOURCE_GIT_TAG} \
+		--build-arg SOURCE_GIT_TREE_STATE=${SOURCE_GIT_TREE_STATE} \
+		--build-arg SOURCE_GIT_COMMIT=${SOURCE_GIT_COMMIT} \
+		-f Containerfile.imagebuilder -t flightctl-imagebuilder:latest
 
 flightctl-periodic-container: Containerfile.periodic go.mod go.sum $(GO_FILES)
 	podman build $(call CACHE_FLAGS_FOR_IMAGE,flightctl-periodic) \
@@ -301,7 +312,7 @@ push-containers: login
 	podman push flightctl-cli-artifacts:latest
 	podman push flightctl-userinfo-proxy:latest
 	podman push flightctl-telemetry-gateway:latest
-
+	podman push flightctl-imagebuilder:latest
 # A convenience target to run the full CI process.
 ci-build: build-containers push-containers
 	@echo "--- CI Build & Push Complete ---"
@@ -321,11 +332,11 @@ clean-containers:
 	- podman rmi flightctl-cli-artifacts:latest || true
 	- podman rmi flightctl-userinfo-proxy:latest || true
 	- podman rmi flightctl-telemetry-gateway:latest || true
+	- podman rmi flightctl-imagebuilder:latest || true
 
-build-containers: flightctl-api-container flightctl-pam-issuer-container flightctl-db-setup-container flightctl-worker-container flightctl-periodic-container flightctl-alert-exporter-container flightctl-alertmanager-proxy-container flightctl-multiarch-cli-container flightctl-userinfo-proxy-container flightctl-telemetry-gateway-container
+build-containers: flightctl-api-container flightctl-pam-issuer-container flightctl-db-setup-container flightctl-worker-container flightctl-imagebuilder-container flightctl-periodic-container flightctl-alert-exporter-container flightctl-alertmanager-proxy-container flightctl-multiarch-cli-container flightctl-userinfo-proxy-container flightctl-telemetry-gateway-container
 
 .PHONY: build-containers build-cli build-multiarch-clis
-
 
 bin:
 	mkdir -p bin
@@ -351,8 +362,6 @@ bin/arm64:
 bin/riscv64:
 	GOARCH=riscv64 go build -buildvcs=false $(GO_BUILD_FLAGS) -o $@/flightctl ./cmd/flightctl/...
 	GOARCH=riscv64 go build -buildvcs=false $(GO_BUILD_FLAGS) -o $@/flightctl-agent ./cmd/flightctl-agent/...
-
-
 
 # made as phony targets to make sure they are always rebuilt
 .PHONY: bin/arm64 bin/amd64 bin/riscv64

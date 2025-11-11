@@ -1,0 +1,35 @@
+{{ if and .Values.imagebuilder.enabled (eq .Values.imagebuilder.storage.type "pvc") }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.imagebuilder.storage.pvcName }}
+  namespace: {{ default .Release.Namespace .Values.global.internalNamespace }}
+  labels:
+    app: flightctl
+    component: imagebuilder-storage
+    {{- include "flightctl.standardLabels" . | nindent 4 }}
+  {{- if .Values.imagebuilder.storage.pvc.annotations }}
+  annotations:
+    {{- toYaml .Values.imagebuilder.storage.pvc.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    {{- range .Values.imagebuilder.storage.pvc.accessModes }}
+    - {{ . }}
+    {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.imagebuilder.storage.pvc.size }}
+  {{- if .Values.imagebuilder.storage.pvc.storageClassName }}
+  storageClassName: {{ .Values.imagebuilder.storage.pvc.storageClassName }}
+  {{- end }}
+  {{- if .Values.imagebuilder.storage.pvc.volumeMode }}
+  volumeMode: {{ .Values.imagebuilder.storage.pvc.volumeMode }}
+  {{- end }}
+  {{- if .Values.imagebuilder.storage.pvc.selector }}
+  selector:
+    {{- toYaml .Values.imagebuilder.storage.pvc.selector | nindent 4 }}
+  {{- end }}
+{{ end }}
+

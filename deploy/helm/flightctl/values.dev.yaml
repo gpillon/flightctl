@@ -64,6 +64,10 @@ periodic:
   env:
     GORM_TRACE_ENFORCE_FATAL: "true"
     GORM_TRACE_INCLUDE_QUERY_VARIABLES: "true"
+imagebuilder:
+  image:
+    image: localhost/flightctl-imagebuilder
+    tag: latest
 alertExporter:
   image:
     image: localhost/flightctl-alert-exporter

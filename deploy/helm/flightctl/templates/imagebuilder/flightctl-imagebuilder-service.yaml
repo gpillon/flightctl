@@ -1,0 +1,26 @@
+{{ if .Values.imagebuilder.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    flightctl.service: flightctl-imagebuilder
+    {{- include "flightctl.standardLabels" . | nindent 4 }}
+  name: flightctl-imagebuilder
+  namespace: {{ default .Release.Namespace .Values.global.internalNamespace }}
+spec:
+  ports:
+    - name: http
+      port: 9090
+      protocol: TCP
+      targetPort: 9090
+    {{- if .Values.global.metrics.enabled }}
+    - name: metrics
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    {{- end }}
+  selector:
+    flightctl.service: flightctl-imagebuilder
+  type: ClusterIP
+{{ end }}
+

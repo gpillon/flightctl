@@ -14,7 +14,8 @@ import (
 	reflect "reflect"
 
 	gomock "go.uber.org/mock/gomock"
-	v1 "k8s.io/api/core/v1"
+	v1 "k8s.io/api/batch/v1"
+	v10 "k8s.io/api/core/v1"
 )
 
 // MockK8SClient is a mock of K8SClient interface.
@@ -40,11 +41,172 @@ func (m *MockK8SClient) EXPECT() *MockK8SClientMockRecorder {
 	return m.recorder
 }
 
+// CreateConfigMap mocks base method.
+func (m *MockK8SClient) CreateConfigMap(ctx context.Context, namespace string, configMap *v10.ConfigMap) (*v10.ConfigMap, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateConfigMap", ctx, namespace, configMap)
+	ret0, _ := ret[0].(*v10.ConfigMap)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateConfigMap indicates an expected call of CreateConfigMap.
+func (mr *MockK8SClientMockRecorder) CreateConfigMap(ctx, namespace, configMap any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateConfigMap", reflect.TypeOf((*MockK8SClient)(nil).CreateConfigMap), ctx, namespace, configMap)
+}
+
+// CreateJob mocks base method.
+func (m *MockK8SClient) CreateJob(ctx context.Context, namespace string, job *v1.Job) (*v1.Job, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateJob", ctx, namespace, job)
+	ret0, _ := ret[0].(*v1.Job)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateJob indicates an expected call of CreateJob.
+func (mr *MockK8SClientMockRecorder) CreateJob(ctx, namespace, job any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateJob", reflect.TypeOf((*MockK8SClient)(nil).CreateJob), ctx, namespace, job)
+}
+
+// CreatePVC mocks base method.
+func (m *MockK8SClient) CreatePVC(ctx context.Context, namespace string, pvc *v10.PersistentVolumeClaim) (*v10.PersistentVolumeClaim, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreatePVC", ctx, namespace, pvc)
+	ret0, _ := ret[0].(*v10.PersistentVolumeClaim)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreatePVC indicates an expected call of CreatePVC.
+func (mr *MockK8SClientMockRecorder) CreatePVC(ctx, namespace, pvc any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePVC", reflect.TypeOf((*MockK8SClient)(nil).CreatePVC), ctx, namespace, pvc)
+}
+
+// CreateSecret mocks base method.
+func (m *MockK8SClient) CreateSecret(ctx context.Context, namespace string, secret *v10.Secret) (*v10.Secret, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateSecret", ctx, namespace, secret)
+	ret0, _ := ret[0].(*v10.Secret)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateSecret indicates an expected call of CreateSecret.
+func (mr *MockK8SClientMockRecorder) CreateSecret(ctx, namespace, secret any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSecret", reflect.TypeOf((*MockK8SClient)(nil).CreateSecret), ctx, namespace, secret)
+}
+
+// DeleteConfigMap mocks base method.
+func (m *MockK8SClient) DeleteConfigMap(ctx context.Context, namespace, name string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteConfigMap", ctx, namespace, name)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteConfigMap indicates an expected call of DeleteConfigMap.
+func (mr *MockK8SClientMockRecorder) DeleteConfigMap(ctx, namespace, name any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteConfigMap", reflect.TypeOf((*MockK8SClient)(nil).DeleteConfigMap), ctx, namespace, name)
+}
+
+// DeleteJob mocks base method.
+func (m *MockK8SClient) DeleteJob(ctx context.Context, namespace, name string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteJob", ctx, namespace, name)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteJob indicates an expected call of DeleteJob.
+func (mr *MockK8SClientMockRecorder) DeleteJob(ctx, namespace, name any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteJob", reflect.TypeOf((*MockK8SClient)(nil).DeleteJob), ctx, namespace, name)
+}
+
+// DeletePVC mocks base method.
+func (m *MockK8SClient) DeletePVC(ctx context.Context, namespace, name string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeletePVC", ctx, namespace, name)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeletePVC indicates an expected call of DeletePVC.
+func (mr *MockK8SClientMockRecorder) DeletePVC(ctx, namespace, name any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePVC", reflect.TypeOf((*MockK8SClient)(nil).DeletePVC), ctx, namespace, name)
+}
+
+// DeleteSecret mocks base method.
+func (m *MockK8SClient) DeleteSecret(ctx context.Context, namespace, name string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteSecret", ctx, namespace, name)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteSecret indicates an expected call of DeleteSecret.
+func (mr *MockK8SClientMockRecorder) DeleteSecret(ctx, namespace, name any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSecret", reflect.TypeOf((*MockK8SClient)(nil).DeleteSecret), ctx, namespace, name)
+}
+
+// GetConfigMap mocks base method.
+func (m *MockK8SClient) GetConfigMap(ctx context.Context, namespace, name string) (*v10.ConfigMap, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetConfigMap", ctx, namespace, name)
+	ret0, _ := ret[0].(*v10.ConfigMap)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetConfigMap indicates an expected call of GetConfigMap.
+func (mr *MockK8SClientMockRecorder) GetConfigMap(ctx, namespace, name any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConfigMap", reflect.TypeOf((*MockK8SClient)(nil).GetConfigMap), ctx, namespace, name)
+}
+
+// GetJob mocks base method.
+func (m *MockK8SClient) GetJob(ctx context.Context, namespace, name string) (*v1.Job, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetJob", ctx, namespace, name)
+	ret0, _ := ret[0].(*v1.Job)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetJob indicates an expected call of GetJob.
+func (mr *MockK8SClientMockRecorder) GetJob(ctx, namespace, name any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetJob", reflect.TypeOf((*MockK8SClient)(nil).GetJob), ctx, namespace, name)
+}
+
+// GetPodLogs mocks base method.
+func (m *MockK8SClient) GetPodLogs(ctx context.Context, namespace, podName string, tailLines int64) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPodLogs", ctx, namespace, podName, tailLines)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPodLogs indicates an expected call of GetPodLogs.
+func (mr *MockK8SClientMockRecorder) GetPodLogs(ctx, namespace, podName, tailLines any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPodLogs", reflect.TypeOf((*MockK8SClient)(nil).GetPodLogs), ctx, namespace, podName, tailLines)
+}
+
 // GetSecret mocks base method.
-func (m *MockK8SClient) GetSecret(ctx context.Context, namespace, name string) (*v1.Secret, error) {
+func (m *MockK8SClient) GetSecret(ctx context.Context, namespace, name string) (*v10.Secret, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetSecret", ctx, namespace, name)
-	ret0, _ := ret[0].(*v1.Secret)
+	ret0, _ := ret[0].(*v10.Secret)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -53,6 +215,36 @@ func (m *MockK8SClient) GetSecret(ctx context.Context, namespace, name string) (
 func (mr *MockK8SClientMockRecorder) GetSecret(ctx, namespace, name any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSecret", reflect.TypeOf((*MockK8SClient)(nil).GetSecret), ctx, namespace, name)
+}
+
+// ListJobs mocks base method.
+func (m *MockK8SClient) ListJobs(ctx context.Context, namespace, labelSelector string) (*v1.JobList, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListJobs", ctx, namespace, labelSelector)
+	ret0, _ := ret[0].(*v1.JobList)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListJobs indicates an expected call of ListJobs.
+func (mr *MockK8SClientMockRecorder) ListJobs(ctx, namespace, labelSelector any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListJobs", reflect.TypeOf((*MockK8SClient)(nil).ListJobs), ctx, namespace, labelSelector)
+}
+
+// ListPods mocks base method.
+func (m *MockK8SClient) ListPods(ctx context.Context, namespace, labelSelector string) (*v10.PodList, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListPods", ctx, namespace, labelSelector)
+	ret0, _ := ret[0].(*v10.PodList)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListPods indicates an expected call of ListPods.
+func (mr *MockK8SClientMockRecorder) ListPods(ctx, namespace, labelSelector any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPods", reflect.TypeOf((*MockK8SClient)(nil).ListPods), ctx, namespace, labelSelector)
 }
 
 // PostCRD mocks base method.
@@ -73,4 +265,18 @@ func (mr *MockK8SClientMockRecorder) PostCRD(ctx, crdGVK, body any, opts ...any)
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]any{ctx, crdGVK, body}, opts...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PostCRD", reflect.TypeOf((*MockK8SClient)(nil).PostCRD), varargs...)
+}
+
+// WatchJob mocks base method.
+func (m *MockK8SClient) WatchJob(ctx context.Context, namespace, name string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "WatchJob", ctx, namespace, name)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// WatchJob indicates an expected call of WatchJob.
+func (mr *MockK8SClientMockRecorder) WatchJob(ctx, namespace, name any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WatchJob", reflect.TypeOf((*MockK8SClient)(nil).WatchJob), ctx, namespace, name)
 }

@@ -89,6 +89,25 @@ data:
     {{ end }}
     organizations:
         enabled: {{ .Values.global.organizations.enabled }}
+    {{ if .Values.imagebuilder.enabled }}
+    imageBuilder:
+        buildNamespace: {{ .Values.imagebuilder.buildNamespace }}
+        {{- if .Values.imagebuilder.defaultRegistry }}
+        defaultRegistry: {{ .Values.imagebuilder.defaultRegistry }}
+        {{- end }}
+        {{- if .Values.imagebuilder.storage }}
+        storage:
+            type: {{ .Values.imagebuilder.storage.type }}
+            {{- if eq .Values.imagebuilder.storage.type "pvc" }}
+            pvcName: {{ .Values.imagebuilder.storage.pvcName }}
+            {{- else if eq .Values.imagebuilder.storage.type "s3" }}
+            s3:
+                bucket: {{ .Values.imagebuilder.storage.s3.bucket }}
+                region: {{ .Values.imagebuilder.storage.s3.region }}
+                endpoint: {{ .Values.imagebuilder.storage.s3.endpoint }}
+            {{- end }}
+        {{- end }}
+    {{ end }}
     {{ if .Values.global.metrics.enabled }}
     metrics:
         enabled: true

@@ -51,6 +51,10 @@ const (
 	FleetKind       = "Fleet"
 	FleetListKind   = "FleetList"
 
+	ImageBuildAPIVersion = "v1alpha1"
+	ImageBuildKind       = "ImageBuild"
+	ImageBuildListKind   = "ImageBuildList"
+
 	FleetAnnotationTemplateVersion = "fleet-controller/templateVersion"
 	// The last template version that has been processed by device selection reconciler.  It is used for new rollout detection
 	FleetAnnotationDeployingTemplateVersion = "fleet-controller/deployingTemplateVersion"

@@ -73,6 +73,10 @@ func (m *MockStore) CheckHealth(context.Context) error {
 	return nil
 }
 
+func (m *MockStore) ImageBuild() store.ImageBuild {
+	return nil
+}
+
 // MockDevice implements store.Device for testing
 type MockDevice struct {
 	results []store.CountByOrgAndStatusResult

@@ -1,0 +1,50 @@
+apiVersion: flightctl.io/v1alpha1
+kind: ImageBuild
+metadata:
+  name: test-simple-build
+  labels:
+    purpose: testing
+    complexity: simple
+spec:
+  # Base image to build from
+  baseImage: "quay.io/centos-bootc/centos-bootc:stream9"
+  
+  # Push the built container image to the registry
+  pushToRegistry: true
+  
+  # Container registry configuration
+  containerRegistry:
+    url: "quay.io/flightctl/test-simple-image"
+    # credentials:
+    #   username: "your-username"
+    #   password: "your-password"
+  
+  # Image customizations
+  customizations:
+    # Install additional packages
+    packages:
+      - vim
+      - curl
+      - wget
+      - git
+    
+    # Add a custom file
+    files:
+      - path: /etc/motd
+        content: |
+          Welcome to FlightCtl ImageBuilder Test Image!
+          Built on: $(date)
+        mode: "0644"
+        user: root
+        group: root
+    
+    # Add a simple script
+    scripts:
+      - path: /usr/local/bin/test.sh
+        content: |
+          #!/bin/bash
+          echo "Hello from FlightCtl ImageBuilder!"
+          echo "Image built successfully at: $(date)"
+    
+    # Enable EPEL repository
+    enableEpel: true

@@ -1,0 +1,88 @@
+{{ if .Values.imagebuilder.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    flightctl.service: flightctl-imagebuilder
+    {{- include "flightctl.standardLabels" . | nindent 4 }}
+  name: flightctl-imagebuilder
+  namespace: {{ default .Release.Namespace .Values.global.internalNamespace }}
+spec:
+  replicas: {{ .Values.imagebuilder.replicas }}
+  selector:
+    matchLabels:
+      flightctl.service: flightctl-imagebuilder
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        flightctl.service: flightctl-imagebuilder
+        {{- include "flightctl.standardLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: flightctl-imagebuilder
+      initContainers:
+      {{- include "flightctl.databaseWaitInitContainer" (dict "context" . "userType" "app") | nindent 6 }}
+      {{- include "flightctl.migrationWaitInitContainer" (dict "context" . "timeout" 600) | nindent 6 }}
+      containers:
+        - name: flightctl-imagebuilder
+          image: {{ .Values.imagebuilder.image.image }}:{{ default .Chart.AppVersion .Values.imagebuilder.image.tag }}
+          imagePullPolicy: {{ default .Values.global.imagePullPolicy .Values.imagebuilder.image.pullPolicy }}
+          ports:
+            - containerPort: 9090
+              name: http
+              protocol: TCP
+            {{ if .Values.global.metrics.enabled }}
+            - containerPort: 8080
+              name: metrics
+              protocol: TCP
+            {{ end }}
+          env:
+            - name: HOME
+              value: "/root"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: flightctl-db-app-secret
+                  key: userPassword
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: flightctl-db-app-secret
+                  key: user
+            - name: UPLOAD_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: imagebuilder-upload-token
+                  key: token
+            {{- if .Values.imagebuilder.env }}
+            {{- range $key, $value := .Values.imagebuilder.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+          volumeMounts:
+            - mountPath: /root/.flightctl/config.yaml
+              name: flightctl-imagebuilder-config
+              subPath: config.yaml
+              readOnly: true
+            {{- if and .Values.imagebuilder.storage (eq .Values.imagebuilder.storage.type "pvc") }}
+            - mountPath: /mnt/pvc/{{ .Values.imagebuilder.storage.pvcName }}
+              name: imagebuilder-storage
+            {{- end }}
+            {{- include "flightctl.dbSslVolumeMounts" . | nindent 12 }}
+          resources:
+            {{- toYaml .Values.imagebuilder.resources | nindent 12 }}
+      restartPolicy: Always
+      volumes:
+        - name: flightctl-imagebuilder-config
+          configMap:
+            name: flightctl-imagebuilder-config
+        {{- if and .Values.imagebuilder.storage (eq .Values.imagebuilder.storage.type "pvc") }}
+        - name: imagebuilder-storage
+          persistentVolumeClaim:
+            claimName: {{ .Values.imagebuilder.storage.pvcName }}
+        {{- end }}
+        {{- include "flightctl.dbSslVolumes" . | nindent 8 }}
+{{ end }}
+

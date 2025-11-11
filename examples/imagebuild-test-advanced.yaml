@@ -1,0 +1,153 @@
+apiVersion: flightctl.io/v1alpha1
+kind: ImageBuild
+metadata:
+  name: test-advanced-build
+  labels:
+    purpose: testing
+    complexity: advanced
+    environment: development
+spec:
+  # Base image to build from
+  baseImage: "quay.io/centos-bootc/centos-bootc:stream9"
+  
+  # Push the built container image to the registry
+  pushToRegistry: true
+  
+  # Container registry configuration
+  containerRegistry:
+    url: "quay.io/flightctl/test-advanced-image:dev-v1"
+    # credentials:
+    #   username: "your-username"
+    #   password: "your-password"
+  
+  # Export bootc disk images
+  bootcExports:
+    - type: qcow2
+      architecture: x86_64
+    - type: iso
+      architecture: x86_64
+    - type: ami
+      architecture: x86_64
+  
+  # Advanced image customizations
+  customizations:
+    # Install comprehensive package set
+    packages:
+      - vim
+      - curl
+      - wget
+      - git
+      - htop
+      - tmux
+      - golang
+      - python3
+      - podman
+      - buildah
+    
+    # Enable EPEL and Podman
+    enableEpel: true
+    enablePodman: true
+    
+    # Add custom files
+    files:
+      - path: /etc/motd
+        content: |
+          ════════════════════════════════════════════════════
+          FlightCtl Advanced Test Image
+          Built with FlightCtl ImageBuilder
+          Version: 1.0.0
+          ════════════════════════════════════════════════════
+        mode: "0644"
+        user: root
+        group: root
+      
+      - path: /etc/profile.d/custom-env.sh
+        content: |
+          export FLIGHTCTL_ENV=development
+          export APP_VERSION=1.0.0
+        mode: "0644"
+        user: root
+        group: root
+    
+    # Add scripts
+    scripts:
+      - path: /usr/local/bin/health-check.sh
+        content: |
+          #!/bin/bash
+          # Health check script
+          echo "Running health checks..."
+          systemctl is-active podman.socket || exit 1
+          echo "All checks passed!"
+      
+      - path: /usr/local/bin/app-start.sh
+        content: |
+          #!/bin/bash
+          echo "Starting FlightCtl test application..."
+          echo "Timestamp: $(date)"
+          echo "Hostname: $(hostname)"
+          # Add your application startup logic here
+    
+    # Create users
+    users:
+      - name: appuser
+        groups:
+          - wheel
+          - docker
+        shell: /bin/bash
+        sshKeys:
+          - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC... (your SSH public key)"
+      
+      - name: operator
+        groups:
+          - wheel
+        shell: /bin/bash
+    
+    # Add systemd units
+    systemdUnits:
+      - name: health-check.service
+        enabled: true
+        content: |
+          [Unit]
+          Description=Health Check Service
+          After=network.target
+          
+          [Service]
+          Type=oneshot
+          ExecStart=/usr/local/bin/health-check.sh
+          StandardOutput=journal
+          StandardError=journal
+          
+          [Install]
+          WantedBy=multi-user.target
+      
+      - name: health-check.timer
+        enabled: true
+        content: |
+          [Unit]
+          Description=Run Health Check Every 5 Minutes
+          
+          [Timer]
+          OnBootSec=5min
+          OnUnitActiveSec=5min
+          Unit=health-check.service
+          
+          [Install]
+          WantedBy=timers.target
+    
+    # Add SSH keys for root
+    sshKeys:
+      - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC... (your SSH public key for root)"
+  
+  # FlightCtl agent configuration
+  flightctlConfig:
+    specFetchInterval: "1m"
+    statusUpdateInterval: "1m"
+    logLevel: "debug"
+    defaultLabels:
+      environment: "test"
+      image-type: "advanced"
+    systemInfo:
+      - hostname
+      - cpu
+      - memory
+      - disks

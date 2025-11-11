@@ -28,6 +28,8 @@ tags:
     description: Operations for retrieving events.
   - name: fleet
     description: Operations on Fleet resources.
+  - name: imagebuild
+    description: Operations on ImageBuild resources.
   - name: label
     description: Operations for retrieving labels across different resources.
   - name: organization
@@ -3448,6 +3450,532 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+  /api/v1/imagebuilds:
+    get:
+      tags:
+        - imagebuild
+      description: List ImageBuild resources.
+      operationId: listImageBuilds
+      parameters:
+        - name: continue
+          in: query
+          description: An optional parameter to query more results from the server. The value of the paramter must match the value of the 'continue' field in the previous list response.
+          required: false
+          schema:
+            type: string
+        - name: labelSelector
+          in: query
+          description: A selector to restrict the list of returned objects by their labels. Defaults to everything.
+          schema:
+            type: string
+        - name: fieldSelector
+          in: query
+          description: A selector to restrict the list of returned objects by their fields, supporting operators like '=', '==', and '!=' (e.g., "key1=value1,key2!=value2").
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: The maximum number of results returned in the list response. The server will set the 'continue' field in the list response if more results exist. The continue value may then be specified as parameter in a subsequent query.
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageBuildList'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "429":
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "503":
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+    post:
+      tags:
+        - imagebuild
+      description: Create an ImageBuild resource.
+      operationId: createImageBuild
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageBuild'
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageBuild'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "429":
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "503":
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /api/v1/imagebuilds/{name}:
+    get:
+      tags:
+        - imagebuild
+      description: Get an ImageBuild resource.
+      operationId: getImageBuild
+      parameters:
+        - name: name
+          in: path
+          description: The name of the ImageBuild resource to get.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageBuild'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "429":
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "503":
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+    put:
+      tags:
+        - imagebuild
+      description: Update an ImageBuild resource.
+      operationId: replaceImageBuild
+      parameters:
+        - name: name
+          in: path
+          description: The name of the ImageBuild resource to update.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageBuild'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageBuild'
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageBuild'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "429":
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "503":
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+    patch:
+      tags:
+        - imagebuild
+      description: Patch an ImageBuild resource.
+      operationId: patchImageBuild
+      parameters:
+        - name: name
+          in: path
+          description: The name of the ImageBuild resource to patch.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/PatchRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageBuild'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "429":
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "503":
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+    delete:
+      tags:
+        - imagebuild
+      description: Delete an ImageBuild resource.
+      operationId: deleteImageBuild
+      parameters:
+        - name: name
+          in: path
+          description: The name of the ImageBuild resource to delete.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "429":
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "503":
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /api/v1/imagebuilds/{name}/status:
+    get:
+      tags:
+        - imagebuild
+      description: Read status of the specified ImageBuild
+      operationId: getImageBuildStatus
+      parameters:
+        - name: name
+          in: path
+          description: The name of the ImageBuild resource to get.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageBuild'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "429":
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "503":
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+    patch:
+      tags:
+        - imagebuild
+      description: Patch the status of an ImageBuild resource.
+      operationId: patchImageBuildStatus
+      parameters:
+        - name: name
+          in: path
+          description: The name of the ImageBuild resource to patch.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/PatchRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageBuild'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "429":
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "503":
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+    put:
+      tags:
+        - imagebuild
+      description: Replace status of the specified ImageBuild
+      operationId: replaceImageBuildStatus
+      parameters:
+        - name: name
+          in: path
+          description: The name of the ImageBuild resource to update.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageBuild'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageBuild'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "429":
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "503":
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
   /api/v1/labels:
     get:
       tags:
@@ -4087,6 +4615,375 @@ components:
         - oneOf:
             - $ref: '#/components/schemas/ImageApplicationProviderSpec'
             - $ref: '#/components/schemas/InlineApplicationProviderSpec'
+    ImageBuild:
+      type: object
+      properties:
+        apiVersion:
+          type: string
+          description: 'APIVersion defines the versioned schema of this representation of an object.'
+        kind:
+          type: string
+          description: 'Kind is a string value representing the REST resource this object represents.'
+        metadata:
+          $ref: '#/components/schemas/ObjectMeta'
+        spec:
+          $ref: '#/components/schemas/ImageBuildSpec'
+        status:
+          $ref: '#/components/schemas/ImageBuildStatus'
+      required:
+        - apiVersion
+        - kind
+        - metadata
+        - spec
+      description: ImageBuild represents a container and disk image build configuration.
+    ImageBuildList:
+      type: object
+      properties:
+        apiVersion:
+          type: string
+          description: 'APIVersion defines the versioned schema of this representation of an object.'
+        kind:
+          type: string
+          description: 'Kind is a string value representing the REST resource this object represents.'
+        metadata:
+          $ref: '#/components/schemas/ListMeta'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageBuild'
+      required:
+        - apiVersion
+        - kind
+        - metadata
+        - items
+      description: ImageBuildList is a list of ImageBuild resources.
+    ImageBuildSpec:
+      type: object
+      properties:
+        baseImage:
+          type: string
+          description: The base container image to build from.
+        containerfile:
+          type: string
+          description: Optional custom containerfile content. If not specified, one will be generated.
+        baseImageRegistryCredentials:
+          $ref: '#/components/schemas/BaseImageRegistryCredentials'
+        customizations:
+          $ref: '#/components/schemas/ImageBuildCustomizations'
+        bootcExports:
+          type: array
+          description: List of bootc disk image types to export.
+          items:
+            $ref: '#/components/schemas/BootcExport'
+        flightctlConfig:
+          $ref: '#/components/schemas/FlightctlAgentConfig'
+        containerRegistry:
+          $ref: '#/components/schemas/ContainerRegistryConfig'
+        pushToRegistry:
+          type: boolean
+          description: Whether to push the built container image to the registry.
+          default: true
+      required:
+        - baseImage
+      description: ImageBuildSpec defines the desired state of an ImageBuild.
+    ImageBuildStatus:
+      type: object
+      properties:
+        phase:
+          type: string
+          enum:
+            - Pending
+            - Building
+            - Pushing
+            - GeneratingImages
+            - Completed
+            - Failed
+            - Cancelled
+          description: The current phase of the image build.
+        conditions:
+          type: array
+          description: Current conditions of the image build.
+          items:
+            $ref: '#/components/schemas/Condition'
+        containerImageRef:
+          type: string
+          description: Reference to the built container image.
+        bootcImageRefs:
+          type: array
+          description: References to the generated bootc disk images.
+          items:
+            $ref: '#/components/schemas/BootcImageRef'
+        startTime:
+          type: string
+          format: date-time
+          description: Time when the build started.
+        completionTime:
+          type: string
+          format: date-time
+          description: Time when the build completed.
+        message:
+          type: string
+          description: Human-readable message indicating details about the current phase.
+        logs:
+          type: array
+          items:
+            type: string
+          description: Build logs from the job pods (available for failed or completed builds).
+      description: ImageBuildStatus defines the observed state of an ImageBuild.
+    BaseImageRegistryCredentials:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Username for registry authentication.
+        password:
+          type: string
+          description: Password for registry authentication.
+        skipTLSVerify:
+          type: boolean
+          description: Skip TLS certificate verification.
+          default: false
+      description: Credentials for accessing a container registry.
+    ImageBuildCustomizations:
+      type: object
+      properties:
+        packages:
+          type: array
+          description: List of packages to install.
+          items:
+            type: string
+        coprRepos:
+          type: array
+          description: List of COPR repositories to enable.
+          items:
+            type: string
+        enableEpel:
+          type: boolean
+          description: Enable EPEL repositories (epel-release and epel-next-release).
+        enablePodman:
+          type: boolean
+          description: Enable Podman service.
+        files:
+          type: array
+          description: List of files to add to the image.
+          items:
+            $ref: '#/components/schemas/ImageBuildFile'
+        scripts:
+          type: array
+          description: List of scripts to run during image build.
+          items:
+            $ref: '#/components/schemas/ImageBuildScript'
+        systemdUnits:
+          type: array
+          description: List of systemd units to add to the image.
+          items:
+            $ref: '#/components/schemas/ImageBuildSystemdUnit'
+        sshKeys:
+          type: array
+          description: List of SSH public keys to add.
+          items:
+            type: string
+        users:
+          type: array
+          description: List of users to create.
+          items:
+            $ref: '#/components/schemas/ImageBuildUser'
+      description: Customizations to apply to the base image.
+    ImageBuildFile:
+      type: object
+      properties:
+        path:
+          type: string
+          description: Destination path for the file.
+        content:
+          type: string
+          description: Content of the file.
+        mode:
+          type: string
+          description: File permissions in octal format (e.g., "0644", "0755").
+        user:
+          type: string
+          description: Owner user for the file.
+        group:
+          type: string
+          description: Owner group for the file.
+      required:
+        - path
+        - content
+      description: A file to add to the image.
+    ImageBuildScript:
+      type: object
+      properties:
+        path:
+          type: string
+          description: Path where the script will be stored.
+        content:
+          type: string
+          description: Content of the script.
+      required:
+        - path
+        - content
+      description: A script to run during image build.
+    ImageBuildSystemdUnit:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the systemd unit.
+        content:
+          type: string
+          description: Content of the systemd unit file.
+        enabled:
+          type: boolean
+          description: Whether the unit should be enabled by default.
+          default: false
+      required:
+        - name
+        - content
+      description: A systemd unit configuration.
+    ImageBuildUser:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Username.
+        password:
+          type: string
+          description: Hashed password for the user.
+        groups:
+          type: array
+          description: List of groups the user should belong to.
+          items:
+            type: string
+        sshKeys:
+          type: array
+          description: List of SSH public keys for the user.
+          items:
+            type: string
+        shell:
+          type: string
+          description: Default shell for the user.
+      required:
+        - name
+      description: A user account to create in the image.
+    BootcExport:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - iso
+            - ami
+            - vmdk
+            - qcow2
+            - raw
+            - tar
+          description: The type of bootc disk image to export.
+        architecture:
+          type: string
+          enum:
+            - x86_64
+            - aarch64
+          description: Target architecture for the disk image.
+          default: x86_64
+      required:
+        - type
+      description: Configuration for exporting a bootc disk image.
+    BootcImageRef:
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of the bootc disk image.
+        architecture:
+          type: string
+          description: Architecture of the disk image.
+        storageRef:
+          type: string
+          description: Reference to where the image is stored.
+      required:
+        - type
+        - storageRef
+      description: Reference to a generated bootc disk image.
+    FlightctlAgentConfig:
+      type: object
+      properties:
+        overrideEnrollmentService:
+          type: boolean
+          description: Whether to override the default enrollment service configuration.
+          default: false
+        enrollmentService:
+          $ref: '#/components/schemas/EnrollmentService'
+        specFetchInterval:
+          type: string
+          description: Interval for fetching device spec.
+        statusUpdateInterval:
+          type: string
+          description: Interval for updating device status.
+        defaultLabels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Default labels for the device.
+        systemInfo:
+          type: array
+          description: List of system information fields to collect.
+          items:
+            type: string
+        systemInfoCustom:
+          type: array
+          description: List of custom system information commands.
+          items:
+            type: string
+        systemInfoTimeout:
+          type: string
+          description: Timeout for collecting system information.
+        pullTimeout:
+          type: string
+          description: Timeout for pulling container images.
+        logLevel:
+          type: string
+          description: Log level for the flightctl agent.
+        tpm:
+          $ref: '#/components/schemas/TPMConfig'
+      description: Configuration for the flightctl agent embedded in the image.
+    TPMConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: Whether TPM support is enabled.
+          default: false
+        devicePath:
+          type: string
+          description: Path to the TPM device.
+        authEnabled:
+          type: boolean
+          description: Whether TPM authentication is enabled.
+          default: false
+        storageFilePath:
+          type: string
+          description: Path to TPM storage file.
+      description: TPM configuration for the flightctl agent.
+    ContainerRegistryConfig:
+      type: object
+      properties:
+        url:
+          type: string
+          description: Container registry URL.
+        credentials:
+          type: object
+          properties:
+            username:
+              type: string
+              description: Username for registry authentication.
+            password:
+              type: string
+              description: Password for registry authentication.
+          description: Registry authentication credentials.
+      required:
+        - url
+      description: Container registry configuration for pushing images.
     ImageApplicationProviderSpec:
       type: object
       allOf:

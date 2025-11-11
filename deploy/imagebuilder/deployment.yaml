@@ -1,0 +1,175 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: flightctl-builds
+  labels:
+    app: flightctl
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: flightctl-imagebuilder
+  namespace: flightctl
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: flightctl-imagebuilder
+  namespace: flightctl-builds
+rules:
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["create", "get", "list", "watch", "delete", "deletecollection"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["create", "get", "list", "delete"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["create", "get", "list", "delete"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["create", "get", "list", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: flightctl-imagebuilder
+  namespace: flightctl-builds
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: flightctl-imagebuilder
+subjects:
+  - kind: ServiceAccount
+    name: flightctl-imagebuilder
+    namespace: flightctl
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flightctl-imagebuilder-config
+  namespace: flightctl
+data:
+  config.yaml: |
+    database:
+      hostname: postgres
+      port: 5432
+      name: flightctl
+      user: admin
+      password: password
+    
+    service:
+      baseUrl: http://flightctl-api:7443
+      logLevel: info
+    
+    imagebuilder:
+      buildNamespace: flightctl-builds
+      defaultRegistry: quay.io/flightctl
+      storage:
+        type: pvc
+        pvcName: imagebuilder-storage
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: imagebuilder-storage
+  namespace: flightctl-builds
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: standard
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flightctl-imagebuilder
+  namespace: flightctl
+  labels:
+    app: flightctl-imagebuilder
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flightctl-imagebuilder
+  template:
+    metadata:
+      labels:
+        app: flightctl-imagebuilder
+    spec:
+      serviceAccountName: flightctl-imagebuilder
+      containers:
+        - name: imagebuilder
+          image: quay.io/flightctl/flightctl-imagebuilder:latest
+          imagePullPolicy: Always
+          env:
+            - name: HOME
+              value: /app
+          volumeMounts:
+            - name: config
+              mountPath: /etc/flightctl
+              readOnly: true
+            - name: pvc-storage
+              mountPath: /mnt/pvc/imagebuilder-storage
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: 2
+              memory: 2Gi
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - "ps aux | grep flightctl-imagebuilder | grep -v grep"
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - "ps aux | grep flightctl-imagebuilder | grep -v grep"
+            initialDelaySeconds: 10
+            periodSeconds: 10
+      volumes:
+        - name: config
+          configMap:
+            name: flightctl-imagebuilder-config
+        - name: pvc-storage
+          persistentVolumeClaim:
+            claimName: imagebuilder-storage
+---
+# SecurityContextConstraints for OpenShift (if needed)
+# This allows the imagebuilder to create privileged pods
+apiVersion: security.openshift.io/v1
+kind: SecurityContextConstraints
+metadata:
+  name: flightctl-imagebuilder-scc
+allowPrivilegedContainer: true
+allowHostDirVolumePlugin: false
+allowHostIPC: false
+allowHostNetwork: false
+allowHostPID: false
+allowHostPorts: false
+runAsUser:
+  type: RunAsAny
+seLinuxContext:
+  type: RunAsAny
+fsGroup:
+  type: RunAsAny
+supplementalGroups:
+  type: RunAsAny
+users:
+  - system:serviceaccount:flightctl:flightctl-imagebuilder
+

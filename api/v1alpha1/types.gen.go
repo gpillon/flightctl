@@ -36,6 +36,22 @@ const (
 	ApplicationsSummaryStatusUnknown  ApplicationsSummaryStatusType = "Unknown"
 )
 
+// Defines values for BootcExportArchitecture.
+const (
+	Aarch64 BootcExportArchitecture = "aarch64"
+	X8664   BootcExportArchitecture = "x86_64"
+)
+
+// Defines values for BootcExportType.
+const (
+	Ami   BootcExportType = "ami"
+	Iso   BootcExportType = "iso"
+	Qcow2 BootcExportType = "qcow2"
+	Raw   BootcExportType = "raw"
+	Tar   BootcExportType = "tar"
+	Vmdk  BootcExportType = "vmdk"
+)
+
 // Defines values for ConditionStatus.
 const (
 	ConditionStatusFalse   ConditionStatus = "False"
@@ -268,6 +284,17 @@ const (
 	None    FleetRolloutStartedDetailsRolloutStrategy = "None"
 )
 
+// Defines values for ImageBuildStatusPhase.
+const (
+	Building         ImageBuildStatusPhase = "Building"
+	Cancelled        ImageBuildStatusPhase = "Cancelled"
+	Completed        ImageBuildStatusPhase = "Completed"
+	Failed           ImageBuildStatusPhase = "Failed"
+	GeneratingImages ImageBuildStatusPhase = "GeneratingImages"
+	Pending          ImageBuildStatusPhase = "Pending"
+	Pushing          ImageBuildStatusPhase = "Pushing"
+)
+
 // Defines values for ImagePullPolicy.
 const (
 	PullAlways       ImagePullPolicy = "Always"
@@ -451,6 +478,18 @@ type AuthOrganizationsConfig struct {
 	Enabled bool `json:"enabled"`
 }
 
+// BaseImageRegistryCredentials Credentials for accessing a container registry.
+type BaseImageRegistryCredentials struct {
+	// Password Password for registry authentication.
+	Password *string `json:"password,omitempty"`
+
+	// SkipTLSVerify Skip TLS certificate verification.
+	SkipTLSVerify *bool `json:"skipTLSVerify,omitempty"`
+
+	// Username Username for registry authentication.
+	Username *string `json:"username,omitempty"`
+}
+
 // Batch Batch is an element in batch sequence.
 type Batch struct {
 	// Limit The maximum number or percentage of devices to update in the batch.
@@ -478,6 +517,33 @@ type BatchSequence struct {
 
 	// Strategy The strategy of choice for device selection in rollout policy.
 	Strategy RolloutStrategy `json:"strategy"`
+}
+
+// BootcExport Configuration for exporting a bootc disk image.
+type BootcExport struct {
+	// Architecture Target architecture for the disk image.
+	Architecture *BootcExportArchitecture `json:"architecture,omitempty"`
+
+	// Type The type of bootc disk image to export.
+	Type BootcExportType `json:"type"`
+}
+
+// BootcExportArchitecture Target architecture for the disk image.
+type BootcExportArchitecture string
+
+// BootcExportType The type of bootc disk image to export.
+type BootcExportType string
+
+// BootcImageRef Reference to a generated bootc disk image.
+type BootcImageRef struct {
+	// Architecture Architecture of the disk image.
+	Architecture *string `json:"architecture,omitempty"`
+
+	// StorageRef Reference to where the image is stored.
+	StorageRef string `json:"storageRef"`
+
+	// Type The type of the bootc disk image.
+	Type string `json:"type"`
 }
 
 // CertificateSigningRequest CertificateSigningRequest represents a request for a signed certificate from the CA.
@@ -576,6 +642,21 @@ type ConditionType string
 // ConfigProviderSpec defines model for ConfigProviderSpec.
 type ConfigProviderSpec struct {
 	union json.RawMessage
+}
+
+// ContainerRegistryConfig Container registry configuration for pushing images.
+type ContainerRegistryConfig struct {
+	// Credentials Registry authentication credentials.
+	Credentials *struct {
+		// Password Password for registry authentication.
+		Password *string `json:"password,omitempty"`
+
+		// Username Username for registry authentication.
+		Username *string `json:"username,omitempty"`
+	} `json:"credentials,omitempty"`
+
+	// Url Container registry URL.
+	Url string `json:"url"`
 }
 
 // CpuResourceMonitorSpec defines model for CpuResourceMonitorSpec.
@@ -1410,6 +1491,42 @@ type FleetStatus struct {
 	Rollout *FleetRolloutStatus `json:"rollout,omitempty"`
 }
 
+// FlightctlAgentConfig Configuration for the flightctl agent embedded in the image.
+type FlightctlAgentConfig struct {
+	// DefaultLabels Default labels for the device.
+	DefaultLabels *map[string]string `json:"defaultLabels,omitempty"`
+
+	// EnrollmentService EnrollmentService contains information about how to communicate with a Flight Control enrollment service.
+	EnrollmentService *EnrollmentService `json:"enrollmentService,omitempty"`
+
+	// LogLevel Log level for the flightctl agent.
+	LogLevel *string `json:"logLevel,omitempty"`
+
+	// OverrideEnrollmentService Whether to override the default enrollment service configuration.
+	OverrideEnrollmentService *bool `json:"overrideEnrollmentService,omitempty"`
+
+	// PullTimeout Timeout for pulling container images.
+	PullTimeout *string `json:"pullTimeout,omitempty"`
+
+	// SpecFetchInterval Interval for fetching device spec.
+	SpecFetchInterval *string `json:"specFetchInterval,omitempty"`
+
+	// StatusUpdateInterval Interval for updating device status.
+	StatusUpdateInterval *string `json:"statusUpdateInterval,omitempty"`
+
+	// SystemInfo List of system information fields to collect.
+	SystemInfo *[]string `json:"systemInfo,omitempty"`
+
+	// SystemInfoCustom List of custom system information commands.
+	SystemInfoCustom *[]string `json:"systemInfoCustom,omitempty"`
+
+	// SystemInfoTimeout Timeout for collecting system information.
+	SystemInfoTimeout *string `json:"systemInfoTimeout,omitempty"`
+
+	// Tpm TPM configuration for the flightctl agent.
+	Tpm *TPMConfig `json:"tpm,omitempty"`
+}
+
 // GenericRepoSpec defines model for GenericRepoSpec.
 type GenericRepoSpec struct {
 	// Type RepoSpecType is the type of the repository.
@@ -1540,6 +1657,181 @@ type ImageApplicationProviderSpec struct {
 
 	// Volumes List of application volumes.
 	Volumes *[]ApplicationVolume `json:"volumes,omitempty"`
+}
+
+// ImageBuild ImageBuild represents a container and disk image build configuration.
+type ImageBuild struct {
+	// ApiVersion APIVersion defines the versioned schema of this representation of an object.
+	ApiVersion string `json:"apiVersion"`
+
+	// Kind Kind is a string value representing the REST resource this object represents.
+	Kind string `json:"kind"`
+
+	// Metadata ObjectMeta is metadata that all persisted resources must have, which includes all objects users must create.
+	Metadata ObjectMeta `json:"metadata"`
+
+	// Spec ImageBuildSpec defines the desired state of an ImageBuild.
+	Spec ImageBuildSpec `json:"spec"`
+
+	// Status ImageBuildStatus defines the observed state of an ImageBuild.
+	Status *ImageBuildStatus `json:"status,omitempty"`
+}
+
+// ImageBuildCustomizations Customizations to apply to the base image.
+type ImageBuildCustomizations struct {
+	// CoprRepos List of COPR repositories to enable.
+	CoprRepos *[]string `json:"coprRepos,omitempty"`
+
+	// EnableEpel Enable EPEL repositories (epel-release and epel-next-release).
+	EnableEpel *bool `json:"enableEpel,omitempty"`
+
+	// EnablePodman Enable Podman service.
+	EnablePodman *bool `json:"enablePodman,omitempty"`
+
+	// Files List of files to add to the image.
+	Files *[]ImageBuildFile `json:"files,omitempty"`
+
+	// Packages List of packages to install.
+	Packages *[]string `json:"packages,omitempty"`
+
+	// Scripts List of scripts to run during image build.
+	Scripts *[]ImageBuildScript `json:"scripts,omitempty"`
+
+	// SshKeys List of SSH public keys to add.
+	SshKeys *[]string `json:"sshKeys,omitempty"`
+
+	// SystemdUnits List of systemd units to add to the image.
+	SystemdUnits *[]ImageBuildSystemdUnit `json:"systemdUnits,omitempty"`
+
+	// Users List of users to create.
+	Users *[]ImageBuildUser `json:"users,omitempty"`
+}
+
+// ImageBuildFile A file to add to the image.
+type ImageBuildFile struct {
+	// Content Content of the file.
+	Content string `json:"content"`
+
+	// Group Owner group for the file.
+	Group *string `json:"group,omitempty"`
+
+	// Mode File permissions in octal format (e.g., "0644", "0755").
+	Mode *string `json:"mode,omitempty"`
+
+	// Path Destination path for the file.
+	Path string `json:"path"`
+
+	// User Owner user for the file.
+	User *string `json:"user,omitempty"`
+}
+
+// ImageBuildList ImageBuildList is a list of ImageBuild resources.
+type ImageBuildList struct {
+	// ApiVersion APIVersion defines the versioned schema of this representation of an object.
+	ApiVersion string       `json:"apiVersion"`
+	Items      []ImageBuild `json:"items"`
+
+	// Kind Kind is a string value representing the REST resource this object represents.
+	Kind string `json:"kind"`
+
+	// Metadata ListMeta describes metadata that synthetic resources must have, including lists and various status objects. A resource may have only one of {ObjectMeta, ListMeta}.
+	Metadata ListMeta `json:"metadata"`
+}
+
+// ImageBuildScript A script to run during image build.
+type ImageBuildScript struct {
+	// Content Content of the script.
+	Content string `json:"content"`
+
+	// Path Path where the script will be stored.
+	Path string `json:"path"`
+}
+
+// ImageBuildSpec ImageBuildSpec defines the desired state of an ImageBuild.
+type ImageBuildSpec struct {
+	// BaseImage The base container image to build from.
+	BaseImage string `json:"baseImage"`
+
+	// BaseImageRegistryCredentials Credentials for accessing a container registry.
+	BaseImageRegistryCredentials *BaseImageRegistryCredentials `json:"baseImageRegistryCredentials,omitempty"`
+
+	// BootcExports List of bootc disk image types to export.
+	BootcExports *[]BootcExport `json:"bootcExports,omitempty"`
+
+	// ContainerRegistry Container registry configuration for pushing images.
+	ContainerRegistry *ContainerRegistryConfig `json:"containerRegistry,omitempty"`
+
+	// Containerfile Optional custom containerfile content. If not specified, one will be generated.
+	Containerfile *string `json:"containerfile,omitempty"`
+
+	// Customizations Customizations to apply to the base image.
+	Customizations *ImageBuildCustomizations `json:"customizations,omitempty"`
+
+	// FlightctlConfig Configuration for the flightctl agent embedded in the image.
+	FlightctlConfig *FlightctlAgentConfig `json:"flightctlConfig,omitempty"`
+
+	// PushToRegistry Whether to push the built container image to the registry.
+	PushToRegistry *bool `json:"pushToRegistry,omitempty"`
+}
+
+// ImageBuildStatus ImageBuildStatus defines the observed state of an ImageBuild.
+type ImageBuildStatus struct {
+	// BootcImageRefs References to the generated bootc disk images.
+	BootcImageRefs *[]BootcImageRef `json:"bootcImageRefs,omitempty"`
+
+	// CompletionTime Time when the build completed.
+	CompletionTime *time.Time `json:"completionTime,omitempty"`
+
+	// Conditions Current conditions of the image build.
+	Conditions *[]Condition `json:"conditions,omitempty"`
+
+	// ContainerImageRef Reference to the built container image.
+	ContainerImageRef *string `json:"containerImageRef,omitempty"`
+
+	// Logs Build logs from the job pods (available for failed or completed builds).
+	Logs *[]string `json:"logs,omitempty"`
+
+	// Message Human-readable message indicating details about the current phase.
+	Message *string `json:"message,omitempty"`
+
+	// Phase The current phase of the image build.
+	Phase *ImageBuildStatusPhase `json:"phase,omitempty"`
+
+	// StartTime Time when the build started.
+	StartTime *time.Time `json:"startTime,omitempty"`
+}
+
+// ImageBuildStatusPhase The current phase of the image build.
+type ImageBuildStatusPhase string
+
+// ImageBuildSystemdUnit A systemd unit configuration.
+type ImageBuildSystemdUnit struct {
+	// Content Content of the systemd unit file.
+	Content string `json:"content"`
+
+	// Enabled Whether the unit should be enabled by default.
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// Name Name of the systemd unit.
+	Name string `json:"name"`
+}
+
+// ImageBuildUser A user account to create in the image.
+type ImageBuildUser struct {
+	// Groups List of groups the user should belong to.
+	Groups *[]string `json:"groups,omitempty"`
+
+	// Name Username.
+	Name string `json:"name"`
+
+	// Password Hashed password for the user.
+	Password *string `json:"password,omitempty"`
+
+	// Shell Default shell for the user.
+	Shell *string `json:"shell,omitempty"`
+
+	// SshKeys List of SSH public keys for the user.
+	SshKeys *[]string `json:"sshKeys,omitempty"`
 }
 
 // ImagePullPolicy Optional. Defaults to 'IfNotPresent'. When set to 'Always', the image is pulled every time. When set to 'Never', the image must already exist on the device.
@@ -2040,6 +2332,21 @@ type Status struct {
 	Status string `json:"status"`
 }
 
+// TPMConfig TPM configuration for the flightctl agent.
+type TPMConfig struct {
+	// AuthEnabled Whether TPM authentication is enabled.
+	AuthEnabled *bool `json:"authEnabled,omitempty"`
+
+	// DevicePath Path to the TPM device.
+	DevicePath *string `json:"devicePath,omitempty"`
+
+	// Enabled Whether TPM support is enabled.
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// StorageFilePath Path to TPM storage file.
+	StorageFilePath *string `json:"storageFilePath,omitempty"`
+}
+
 // TemplateVersion TemplateVersion represents a version of a template.
 type TemplateVersion struct {
 	// ApiVersion APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources.
@@ -2262,6 +2569,21 @@ type GetFleetParams struct {
 	AddDevicesSummary *bool `form:"addDevicesSummary,omitempty" json:"addDevicesSummary,omitempty"`
 }
 
+// ListImageBuildsParams defines parameters for ListImageBuilds.
+type ListImageBuildsParams struct {
+	// Continue An optional parameter to query more results from the server. The value of the paramter must match the value of the 'continue' field in the previous list response.
+	Continue *string `form:"continue,omitempty" json:"continue,omitempty"`
+
+	// LabelSelector A selector to restrict the list of returned objects by their labels. Defaults to everything.
+	LabelSelector *string `form:"labelSelector,omitempty" json:"labelSelector,omitempty"`
+
+	// FieldSelector A selector to restrict the list of returned objects by their fields, supporting operators like '=', '==', and '!=' (e.g., "key1=value1,key2!=value2").
+	FieldSelector *string `form:"fieldSelector,omitempty" json:"fieldSelector,omitempty"`
+
+	// Limit The maximum number of results returned in the list response. The server will set the 'continue' field in the list response if more results exist. The continue value may then be specified as parameter in a subsequent query.
+	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
 // ListLabelsParams defines parameters for ListLabels.
 type ListLabelsParams struct {
 	// Kind The type of resource to retrieve labels from.
@@ -2375,6 +2697,21 @@ type PatchFleetStatusApplicationJSONPatchPlusJSONRequestBody = PatchRequest
 
 // ReplaceFleetStatusJSONRequestBody defines body for ReplaceFleetStatus for application/json ContentType.
 type ReplaceFleetStatusJSONRequestBody = Fleet
+
+// CreateImageBuildJSONRequestBody defines body for CreateImageBuild for application/json ContentType.
+type CreateImageBuildJSONRequestBody = ImageBuild
+
+// PatchImageBuildApplicationJSONPatchPlusJSONRequestBody defines body for PatchImageBuild for application/json-patch+json ContentType.
+type PatchImageBuildApplicationJSONPatchPlusJSONRequestBody = PatchRequest
+
+// ReplaceImageBuildJSONRequestBody defines body for ReplaceImageBuild for application/json ContentType.
+type ReplaceImageBuildJSONRequestBody = ImageBuild
+
+// PatchImageBuildStatusApplicationJSONPatchPlusJSONRequestBody defines body for PatchImageBuildStatus for application/json-patch+json ContentType.
+type PatchImageBuildStatusApplicationJSONPatchPlusJSONRequestBody = PatchRequest
+
+// ReplaceImageBuildStatusJSONRequestBody defines body for ReplaceImageBuildStatus for application/json ContentType.
+type ReplaceImageBuildStatusJSONRequestBody = ImageBuild
 
 // CreateRepositoryJSONRequestBody defines body for CreateRepository for application/json ContentType.
 type CreateRepositoryJSONRequestBody = Repository

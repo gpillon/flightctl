@@ -248,6 +248,51 @@ var APIMetadataMap = map[string]EndpointMetadata{
 		Resource:    "",
 		Action:      "",
 	},
+	"GET:/api/v1/imagebuilds": {
+		OperationID: "listImageBuilds",
+		Resource:    "",
+		Action:      "",
+	},
+	"POST:/api/v1/imagebuilds": {
+		OperationID: "createImageBuild",
+		Resource:    "",
+		Action:      "",
+	},
+	"DELETE:/api/v1/imagebuilds/{name}": {
+		OperationID: "deleteImageBuild",
+		Resource:    "",
+		Action:      "",
+	},
+	"GET:/api/v1/imagebuilds/{name}": {
+		OperationID: "getImageBuild",
+		Resource:    "",
+		Action:      "",
+	},
+	"PATCH:/api/v1/imagebuilds/{name}": {
+		OperationID: "patchImageBuild",
+		Resource:    "",
+		Action:      "",
+	},
+	"PUT:/api/v1/imagebuilds/{name}": {
+		OperationID: "replaceImageBuild",
+		Resource:    "",
+		Action:      "",
+	},
+	"GET:/api/v1/imagebuilds/{name}/status": {
+		OperationID: "getImageBuildStatus",
+		Resource:    "",
+		Action:      "",
+	},
+	"PATCH:/api/v1/imagebuilds/{name}/status": {
+		OperationID: "patchImageBuildStatus",
+		Resource:    "",
+		Action:      "",
+	},
+	"PUT:/api/v1/imagebuilds/{name}/status": {
+		OperationID: "replaceImageBuildStatus",
+		Resource:    "",
+		Action:      "",
+	},
 	"GET:/api/v1/labels": {
 		OperationID: "listLabels",
 		Resource:    "",

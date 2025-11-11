@@ -30,6 +30,7 @@ type Config struct {
 	Periodic         *periodicConfig         `json:"periodic,omitempty"`
 	Organizations    *organizationsConfig    `json:"organizations,omitempty"`
 	TelemetryGateway *telemetryGatewayConfig `json:"telemetrygateway,omitempty"`
+	ImageBuilder     *imageBuilderConfig     `json:"imageBuilder,omitempty"`
 }
 
 type RateLimitConfig struct {
@@ -530,6 +531,29 @@ func Validate(cfg *Config) error {
 		}
 	}
 	return nil
+}
+
+type imageBuilderConfig struct {
+	Enabled         bool           `json:"enabled,omitempty"`    // Enable/disable imagebuilder
+	ServiceURL      string         `json:"serviceUrl,omitempty"` // Imagebuilder service URL for API proxy (http://host:port)
+	Storage         *storageConfig `json:"storage,omitempty"`
+	BuildNamespace  string         `json:"buildNamespace,omitempty"` // K8s namespace for Jobs
+	DefaultRegistry string         `json:"defaultRegistry,omitempty"`
+}
+
+type storageConfig struct {
+	Type      string    `json:"type"` // "local", "pvc", "s3"
+	LocalPath string    `json:"localPath,omitempty"`
+	PVCName   string    `json:"pvcName,omitempty"`
+	S3Config  *s3Config `json:"s3,omitempty"`
+}
+
+type s3Config struct {
+	Endpoint  string       `json:"endpoint"`
+	Bucket    string       `json:"bucket"`
+	AccessKey string       `json:"accessKey"`
+	SecretKey SecureString `json:"secretKey"`
+	Region    string       `json:"region,omitempty"`
 }
 
 func (cfg *Config) String() string {

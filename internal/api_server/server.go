@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"regexp"
 	"strings"
 	"time"
@@ -195,8 +197,119 @@ func (s *Server) Run(ctx context.Context) error {
 		middleware.Recoverer,
 	)
 
+	// Create the service handler (no K8s client needed anymore, imagebuilder handles logs)
 	serviceHandler := service.WrapWithTracing(service.NewServiceHandler(
 		s.store, workerClient, kvStore, s.ca, s.log, s.cfg.Service.BaseAgentEndpointUrl, s.cfg.Service.BaseUIUrl, s.cfg.Service.TPMCAPaths, s.orgResolver))
+
+	// Custom endpoints: ImageBuild logs and containerfile generation (not in OpenAPI yet...)
+	router.Group(func(r chi.Router) {
+		r.Use(authMiddewares...)
+
+		// Proxy ImageBuild logs requests to the imagebuilder service
+		if s.cfg.ImageBuilder != nil {
+			imageBuilderURL := "http://flightctl-imagebuilder.flightctl-internal.svc.cluster.local:9090"
+			if s.cfg.ImageBuilder.ServiceURL != "" {
+				imageBuilderURL = s.cfg.ImageBuilder.ServiceURL
+			}
+
+			target, err := url.Parse(imageBuilderURL)
+			if err != nil {
+				s.log.WithError(err).Error("Failed to parse imagebuilder URL, logs endpoint will not be available")
+				r.Get("/api/v1/imagebuilds/{name}/logs", func(w http.ResponseWriter, r *http.Request) {
+					http.Error(w, "ImageBuilder service URL configuration error", http.StatusServiceUnavailable)
+				})
+			} else {
+				proxy := httputil.NewSingleHostReverseProxy(target)
+				proxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
+					s.log.WithError(err).Errorf("Imagebuilder proxy error for %s", r.URL.Path)
+					http.Error(w, "Failed to retrieve logs from imagebuilder service", http.StatusBadGateway)
+				}
+
+				r.Get("/api/v1/imagebuilds/{name}/logs", func(w http.ResponseWriter, r *http.Request) {
+					s.log.Debugf("Proxying logs request to imagebuilder: %s", r.URL.Path)
+					proxy.ServeHTTP(w, r)
+				})
+
+				s.log.Infof("ImageBuilder logs proxy configured, forwarding to: %s", imageBuilderURL)
+			}
+		} else {
+			// ImageBuilder not configured, return error
+			s.log.Warn("ImageBuilder configuration not found, logs endpoint will not be available")
+			r.Get("/api/v1/imagebuilds/{name}/logs", func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, "ImageBuilder service not configured", http.StatusServiceUnavailable)
+			})
+		}
+
+		// Proxy ImageBuild downloads requests to the imagebuilder service
+		if s.cfg.ImageBuilder != nil {
+			imageBuilderURL := "http://flightctl-imagebuilder.flightctl-internal.svc.cluster.local:9090"
+			if s.cfg.ImageBuilder.ServiceURL != "" {
+				imageBuilderURL = s.cfg.ImageBuilder.ServiceURL
+			}
+
+			target, err := url.Parse(imageBuilderURL)
+			if err != nil {
+				s.log.WithError(err).Error("Failed to parse imagebuilder URL, downloads endpoint will not be available")
+				r.Get("/api/v1/imagebuilds/{name}/downloads/{filename}", func(w http.ResponseWriter, r *http.Request) {
+					http.Error(w, "ImageBuilder service URL configuration error", http.StatusServiceUnavailable)
+				})
+			} else {
+				proxy := httputil.NewSingleHostReverseProxy(target)
+				proxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
+					s.log.WithError(err).Errorf("Imagebuilder proxy error for %s", r.URL.Path)
+					http.Error(w, "Failed to download file from imagebuilder service", http.StatusBadGateway)
+				}
+
+				r.Get("/api/v1/imagebuilds/{name}/downloads/{filename}", func(w http.ResponseWriter, r *http.Request) {
+					s.log.Debugf("Proxying download request to imagebuilder: %s", r.URL.Path)
+					proxy.ServeHTTP(w, r)
+				})
+
+				s.log.Infof("ImageBuilder downloads proxy configured, forwarding to: %s", imageBuilderURL)
+			}
+		} else {
+			// ImageBuilder not configured, return error
+			s.log.Warn("ImageBuilder configuration not found, downloads endpoint will not be available")
+			r.Get("/api/v1/imagebuilds/{name}/downloads/{filename}", func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, "ImageBuilder service not configured", http.StatusServiceUnavailable)
+			})
+		}
+
+		// Generate Containerfile from ImageBuildSpec (for preview) - proxy to imagebuilder service
+		if s.cfg.ImageBuilder != nil {
+			imageBuilderURL := "http://flightctl-imagebuilder.flightctl-internal.svc.cluster.local:9090"
+			if s.cfg.ImageBuilder.ServiceURL != "" {
+				imageBuilderURL = s.cfg.ImageBuilder.ServiceURL
+			}
+
+			target, err := url.Parse(imageBuilderURL)
+			if err != nil {
+				s.log.WithError(err).Error("Failed to parse imagebuilder URL, generate-containerfile endpoint will not be available")
+				r.Post("/api/v1/imagebuilds/generate-containerfile", func(w http.ResponseWriter, r *http.Request) {
+					http.Error(w, "ImageBuilder service URL configuration error", http.StatusServiceUnavailable)
+				})
+			} else {
+				proxy := httputil.NewSingleHostReverseProxy(target)
+				proxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
+					s.log.WithError(err).Errorf("Imagebuilder proxy error for %s", r.URL.Path)
+					http.Error(w, "Failed to generate containerfile via imagebuilder service", http.StatusBadGateway)
+				}
+
+				r.Post("/api/v1/imagebuilds/generate-containerfile", func(w http.ResponseWriter, r *http.Request) {
+					s.log.Debugf("Proxying generate-containerfile request to imagebuilder: %s", r.URL.Path)
+					proxy.ServeHTTP(w, r)
+				})
+
+				s.log.Infof("ImageBuilder generate-containerfile proxy configured, forwarding to: %s", imageBuilderURL)
+			}
+		} else {
+			// ImageBuilder not configured, return error
+			s.log.Warn("ImageBuilder configuration not found, generate-containerfile endpoint will not be available")
+			r.Post("/api/v1/imagebuilds/generate-containerfile", func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, "ImageBuilder service not configured", http.StatusServiceUnavailable)
+			})
+		}
+	})
 
 	// a group is a new mux copy, with its own copy of the middleware stack
 	// this one handles the OpenAPI handling of the service (excluding auth validate endpoint)

@@ -38,7 +38,10 @@ redeploy-alertmanager-proxy: flightctl-alertmanager-proxy-container
 redeploy-telemetry-gateway: flightctl-telemetry-gateway-container
 	test/scripts/redeploy.sh telemetry-gateway
 
-deploy-helm: flightctl-api-container flightctl-db-setup-container flightctl-worker-container flightctl-periodic-container flightctl-alert-exporter-container flightctl-alertmanager-proxy-container flightctl-multiarch-cli-container flightctl-telemetry-gateway-container
+redeploy-imagebuilder: flightctl-imagebuilder-container
+	test/scripts/redeploy.sh imagebuilder
+
+deploy-helm: flightctl-api-container flightctl-db-setup-container flightctl-worker-container flightctl-imagebuilder-container flightctl-periodic-container flightctl-alert-exporter-container flightctl-alertmanager-proxy-container flightctl-multiarch-cli-container flightctl-telemetry-gateway-container
 	kubectl config set-context kind-kind
 	test/scripts/install_helm.sh
 	test/scripts/deploy_with_helm.sh --db-size $(DB_SIZE)

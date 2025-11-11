@@ -1,0 +1,120 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flightctl-imagebuilder-config-s3
+  namespace: flightctl
+data:
+  config.yaml: |
+    database:
+      hostname: postgres
+      port: 5432
+      name: flightctl
+      user: admin
+      password: password
+    
+    service:
+      baseUrl: http://flightctl-api:7443
+      logLevel: info
+    
+    imagebuilder:
+      buildNamespace: flightctl-builds
+      defaultRegistry: quay.io/flightctl
+      storage:
+        type: s3
+        s3Config:
+          endpoint: s3.amazonaws.com
+          bucket: flightctl-images
+          region: us-east-1
+          # Access key and secret key will be loaded from secret
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: s3-credentials
+  namespace: flightctl
+type: Opaque
+stringData:
+  accessKey: AKIAIOSFODNN7EXAMPLE
+  secretKey: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flightctl-imagebuilder
+  namespace: flightctl
+  labels:
+    app: flightctl-imagebuilder
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flightctl-imagebuilder
+  template:
+    metadata:
+      labels:
+        app: flightctl-imagebuilder
+    spec:
+      serviceAccountName: flightctl-imagebuilder
+      containers:
+        - name: imagebuilder
+          image: quay.io/flightctl/flightctl-imagebuilder:latest
+          imagePullPolicy: Always
+          env:
+            - name: HOME
+              value: /app
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: s3-credentials
+                  key: accessKey
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: s3-credentials
+                  key: secretKey
+          volumeMounts:
+            - name: config
+              mountPath: /etc/flightctl
+              readOnly: true
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: 2
+              memory: 2Gi
+      volumes:
+        - name: config
+          configMap:
+            name: flightctl-imagebuilder-config-s3
+---
+# Example with MinIO (S3-compatible)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flightctl-imagebuilder-config-minio
+  namespace: flightctl
+data:
+  config.yaml: |
+    database:
+      hostname: postgres
+      port: 5432
+      name: flightctl
+      user: admin
+      password: password
+    
+    service:
+      baseUrl: http://flightctl-api:7443
+      logLevel: info
+    
+    imagebuilder:
+      buildNamespace: flightctl-builds
+      defaultRegistry: quay.io/flightctl
+      storage:
+        type: s3
+        s3Config:
+          endpoint: minio.minio-system.svc.cluster.local:9000
+          bucket: flightctl-images
+          region: us-east-1
+          # MinIO access configured via environment variables
+

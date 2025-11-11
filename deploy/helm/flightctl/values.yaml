@@ -269,6 +269,78 @@ worker:
   # -- Enable secrets cluster role binding for worker
   enableSecretsClusterRoleBinding: true
 
+# -- Image Builder Configuration
+imagebuilder:
+  # -- Enable Flight Control imagebuilder deployment
+  enabled: true
+  image:
+    # -- ImageBuilder container image
+    image: quay.io/flightctl/flightctl-imagebuilder
+    # -- Image pull policy for imagebuilder container
+    pullPolicy: ""
+    # -- ImageBuilder image tag
+    tag: ""
+  # -- Number of replicas
+  replicas: 1
+  # -- Log level for imagebuilder
+  logLevel: "info"
+  # -- Namespace where build jobs will be created
+  buildNamespace: "flightctl-builds"
+  # -- Default container registry for built images
+  defaultRegistry: "quay.io/flightctl"
+  # -- ImageBuilder service URL for artifact uploads (leave empty to auto-generate from service name)
+  # Format: http://host:port (without trailing slash)
+  # Default will be: http://flightctl-imagebuilder.<internal-namespace>.svc.cluster.local:9090
+  serviceUrl: ""
+  # -- Storage configuration for build artifacts
+  storage:
+    # -- Storage type: pvc or s3
+    type: "pvc"
+    # -- PVC name for build storage (when type=pvc)
+    pvcName: "imagebuilder-storage"
+    # -- PVC configuration (when type=pvc)
+    pvc:
+      # -- Storage size for PVC
+      size: "20Gi"
+      # -- Storage class name (leave empty to use cluster default)
+      storageClassName: ""
+      # -- Access modes for PVC
+      # Note: Use ReadWriteOnce for Kind/local clusters
+      # Use ReadWriteMany for production clusters with RWX Volumes
+      accessModes:
+        - ReadWriteOnce
+      # -- Volume mode (Filesystem or Block)
+      volumeMode: ""
+      # -- Annotations for PVC
+      annotations: {}
+      # -- Selector for PVC (to bind to specific PV)
+      selector: {}
+  # -- Upload token for build jobs to upload artifacts
+  # The token is used to authenticate build jobs when uploading artifacts to the imagebuilder service.
+  # The imagebuilder service reads this token from its environment and passes it directly to build jobs.
+  # If not set, a random 32-character token will be generated automatically during installation.
+  # During upgrades, existing tokens will be preserved automatically.
+  # Format: any string (will be base64 encoded automatically)
+  # Example: uploadToken: "my-secure-token-here"
+  uploadToken: ""
+  # -- S3 configuration (when type=s3)
+  s3:
+    bucket: ""
+    region: ""
+    endpoint: ""
+    accessKey: ""
+    secretKey: ""
+  # -- Resource requests and limits
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 2
+      memory: 2Gi
+  # -- Environment variables for imagebuilder
+  env: {}
+
 # -- Periodic Configuration
 periodic:
   # -- Enable Flight Control periodic service

@@ -174,6 +174,10 @@ func (m *MockFleetStoreWrapper) CheckHealth(context.Context) error {
 	return nil
 }
 
+func (m *MockFleetStoreWrapper) ImageBuild() store.ImageBuild {
+	return nil
+}
+
 func TestFleetCollector(t *testing.T) {
 	// Provide mock SQL results for org/status aggregation using RolloutInProgress condition reasons
 	mockResults := []store.CountByRolloutStatusResult{

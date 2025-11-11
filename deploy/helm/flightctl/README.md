@@ -330,6 +330,41 @@ For more detailed configuration options, see the [Values](#values) section below
 | global.tracing.enabled | bool | `false` | Enable distributed tracing with OpenTelemetry |
 | global.tracing.endpoint | string | `"jaeger-collector.flightctl-e2e.svc.cluster.local:4318"` | OpenTelemetry collector endpoint for trace data |
 | global.tracing.insecure | bool | `true` | Use insecure connection to tracing endpoint (development only) |
+| imagebuilder | object | `{"buildNamespace":"flightctl-builds","defaultRegistry":"quay.io/flightctl","enabled":true,"env":{},"image":{"image":"quay.io/flightctl/flightctl-imagebuilder","pullPolicy":"","tag":""},"logLevel":"info","replicas":1,"resources":{"limits":{"cpu":2,"memory":"2Gi"},"requests":{"cpu":"500m","memory":"512Mi"}},"s3":{"accessKey":"","bucket":"","endpoint":"","region":"","secretKey":""},"serviceUrl":"","storage":{"pvc":{"accessModes":["ReadWriteOnce"],"annotations":{},"selector":{},"size":"20Gi","storageClassName":"","volumeMode":""},"pvcName":"imagebuilder-storage","type":"pvc"},"uploadToken":""}` | Image Builder Configuration |
+| imagebuilder.buildNamespace | string | `"flightctl-builds"` | Namespace where build jobs will be created |
+| imagebuilder.defaultRegistry | string | `"quay.io/flightctl"` | Default container registry for built images |
+| imagebuilder.enabled | bool | `true` | Enable Flight Control imagebuilder deployment |
+| imagebuilder.env | object | `{}` | Environment variables for imagebuilder |
+| imagebuilder.image.image | string | `"quay.io/flightctl/flightctl-imagebuilder"` | ImageBuilder container image |
+| imagebuilder.image.pullPolicy | string | `""` | Image pull policy for imagebuilder container |
+| imagebuilder.image.tag | string | `""` | ImageBuilder image tag |
+| imagebuilder.logLevel | string | `"info"` | Log level for imagebuilder |
+| imagebuilder.replicas | int | `1` | Number of replicas |
+| imagebuilder.resources | object | `{"limits":{"cpu":2,"memory":"2Gi"},"requests":{"cpu":"500m","memory":"512Mi"}}` | Resource requests and limits |
+| imagebuilder.resources.limits.cpu | int | `2` | CPU resource limits for imagebuilder pod |
+| imagebuilder.resources.limits.memory | string | `"2Gi"` | Memory resource limits for imagebuilder pod |
+| imagebuilder.resources.requests.cpu | string | `"500m"` | CPU resource requests for imagebuilder pod |
+| imagebuilder.resources.requests.memory | string | `"512Mi"` | Memory resource requests for imagebuilder pod |
+| imagebuilder.s3 | object | `{"accessKey":"","bucket":"","endpoint":"","region":"","secretKey":""}` | S3 configuration (when type=s3) |
+| imagebuilder.s3.accessKey | string | `""` | S3 access key ID for authentication |
+| imagebuilder.s3.bucket | string | `""` | S3 bucket name where build artifacts will be stored |
+| imagebuilder.s3.endpoint | string | `""` | S3 endpoint URL (leave empty for AWS S3, required for S3-compatible services) |
+| imagebuilder.s3.region | string | `""` | S3 region (e.g., us-east-1) |
+| imagebuilder.s3.secretKey | string | `""` | S3 secret access key for authentication |
+| imagebuilder.serviceUrl | string | `""` | ImageBuilder service URL for artifact uploads (leave empty to auto-generate from service name) Format: http://host:port (without trailing slash) Default will be: http://flightctl-imagebuilder.<internal-namespace>.svc.cluster.local:9090 |
+| imagebuilder.storage | object | `{"pvc":{"accessModes":["ReadWriteOnce"],"annotations":{},"selector":{},"size":"20Gi","storageClassName":"","volumeMode":""},"pvcName":"imagebuilder-storage","type":"pvc"}` | Storage configuration for build artifacts |
+| imagebuilder.storage.pvc | object | `{"accessModes":["ReadWriteOnce"],"annotations":{},"selector":{},"size":"20Gi","storageClassName":"","volumeMode":""}` | PVC configuration (when type=pvc) |
+| imagebuilder.storage.pvc.accessModes | list | `["ReadWriteOnce"]` | Access modes for PVC Note: Use ReadWriteOnce for Kind/local clusters Use ReadWriteMany for production clusters with RWX Volumes |
+| imagebuilder.storage.pvc.annotations | object | `{}` | Annotations for PVC |
+| imagebuilder.storage.pvc.selector | object | `{}` | Selector for PVC (to bind to specific PV) |
+| imagebuilder.storage.pvc.size | string | `"20Gi"` | Storage size for PVC |
+| imagebuilder.storage.pvc.storageClassName | string | `""` | Storage class name (leave empty to use cluster default) |
+| imagebuilder.storage.pvc.volumeMode | string | `""` | Volume mode (Filesystem or Block) |
+| imagebuilder.storage.pvcName | string | `"imagebuilder-storage"` | PVC name for build storage (when type=pvc) |
+| imagebuilder.storage.type | string | `"pvc"` | Storage type: pvc or s3 |
+| imagebuilder.uploadToken | string | `""` | Upload token for build jobs to upload artifacts The token is used to authenticate build jobs when uploading artifacts to the imagebuilder service. The imagebuilder service reads this token from its environment and passes it directly to build jobs. If not set, a random 32-character token will be generated automatically during installation. During upgrades, existing tokens will be preserved automatically. Format: any string (will be base64 encoded automatically) Example: uploadToken: "my-secure-token-here" |
+| keycloak | object | `{"db":{"fsGroup":""}}` | Keycloak Configuration |
+| keycloak.db.fsGroup | string | `""` | File system group ID for Keycloak database pod security context |
 | kv | object | `{"enabled":true,"fsGroup":"","image":{"image":"quay.io/sclorg/redis-7-c9s","pullPolicy":"","tag":"20250108"},"loglevel":"warning","maxmemory":"1gb","maxmemoryPolicy":"allkeys-lru","password":""}` | Key-Value Store Configuration |
 | kv.enabled | bool | `true` | Enable Redis key-value store for caching and session storage |
 | kv.fsGroup | string | `""` | File system group ID for Redis pod security context |

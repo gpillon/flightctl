@@ -1,0 +1,36 @@
+{{ if .Values.imagebuilder.enabled }}
+---
+# Role in flightctl-external to read the CA secret
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: flightctl-imagebuilder-ca-reader
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "flightctl.standardLabels" . | nindent 4 }}
+    flightctl.service: flightctl-imagebuilder
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: ["flightctl-ca-secret"]
+    verbs: ["get"]
+---
+# RoleBinding to allow imagebuilder serviceaccount to read CA secret
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: flightctl-imagebuilder-ca-reader
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "flightctl.standardLabels" . | nindent 4 }}
+    flightctl.service: flightctl-imagebuilder
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: flightctl-imagebuilder-ca-reader
+subjects:
+  - kind: ServiceAccount
+    name: flightctl-imagebuilder
+    namespace: {{ default .Release.Namespace .Values.global.internalNamespace }}
+{{ end }}
+
